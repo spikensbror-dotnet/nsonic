@@ -1,0 +1,52 @@
+pool: Hosted Windows 2019 with VS2019
+name: 1.0.0$(Rev:.r)
+variables:
+  projectName: 'NSonic'
+
+steps:
+
+- checkout: self
+
+- task: NuGetToolInstaller@1
+  displayName: 'Ensure latest version of NuGet'
+  inputs:
+    versionSpec: 
+    checkLatest: true
+
+- script: dotnet build -c Release
+  displayName: 'Build'
+
+- task: VSTest@2
+  displayName: 'Tests'
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '*/bin/*/*/*.Tests.dll'
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    runInParallel: true
+    runTestsInIsolation: true
+
+- script: dotnet test $(System.DefaultWorkingDirectory)/$(projectName).Tests/$(projectName).Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+  displayName: 'Code coverage'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish coverage results'
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/$(projectName).Tests/coverage.cobertura.xml'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet pack for $(projectName)'
+  inputs:
+    command: 'pack'
+    feedsToUse: 'select'
+    packagesToPack: '$(projectName)/*.csproj'
+    configuration: 'Release'
+    packDestination: '$(Build.ArtifactStagingDirectory)/packages'
+    versioningScheme: 'byBuildNumber'
+    
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish packages artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/packages'
+    ArtifactName: 'packages'
+    publishLocation: 'Container'

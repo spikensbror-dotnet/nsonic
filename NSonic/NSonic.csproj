@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Kimmy Andersson</Authors>
+    <PackageProjectUrl>https://github.com/spikensbror-dotnet/nsonic</PackageProjectUrl>
+    <Description>NSonic is an open-source .NET client implementation for the Sonic search backend.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+</Project>
