@@ -23,11 +23,16 @@ namespace NSonic.Tests
         [TestMethod]
         public void ShouldBeAbleToCreateSonicSession()
         {
+            // Arrange
+
+            var environment = new EnvironmentResponse(1, 42);
+
             // Act / Assert
 
-            using (var result = this.factory.Create())
+            using (var result = this.factory.Create(environment))
             {
                 Assert.AreSame(this.client.Object, ((SonicSession)result).Client);
+                Assert.AreEqual(environment, ((SonicSession)result).Environment);
             }
         }
 

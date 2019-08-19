@@ -11,9 +11,9 @@ namespace NSonic.Impl
             this.client = client;
         }
 
-        public ISonicSession Create()
+        public ISonicSession Create(EnvironmentResponse environment)
         {
-            return new SonicSession(this.client);
+            return new SonicSession(this.client, environment);
         }
 
         public void Dispose()

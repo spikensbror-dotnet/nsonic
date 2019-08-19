@@ -14,6 +14,7 @@ namespace NSonic.Tests.Connections
 
         protected abstract string Mode { get; }
 
+        internal EnvironmentResponse Environment { get; private set; }
         internal Mock<ISonicSession> Session { get; private set; }
         internal Mock<ISonicRequestWriter> RequestWriter { get; private set; }
         internal ISonicSessionFactoryProvider SessionFactoryProvider { get; private set; }
@@ -21,32 +22,21 @@ namespace NSonic.Tests.Connections
         [TestInitialize]
         public virtual void Initialize()
         {
+            this.Environment = new EnvironmentResponse(1, 20000);
             this.Session = new Mock<ISonicSession>(MockBehavior.Strict);
             this.Session.Setup(s => s.Dispose());
 
             this.RequestWriter = new Mock<ISonicRequestWriter>(MockBehavior.Strict);
 
-            this.SessionFactoryProvider = Mock.Of<ISonicSessionFactoryProvider>(ssfp => ssfp.Create(Hostname, Port).Create() == this.Session.Object);
+            this.SessionFactoryProvider = Mock.Of<ISonicSessionFactoryProvider>(ssfp => ssfp.Create(Hostname, Port).Create(this.Environment) == this.Session.Object);
         }
 
         protected void SetupSuccessfulConnect(MockSequence sequence)
         {
-            this.Session
+            this.RequestWriter
                 .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("CONNECTED <sonic-server v1.00>")
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("START", this.Mode, Secret))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns($"STARTED {this.Mode} protocol(1) buffer(20000)")
-                ;
+                .Setup(rw => rw.WriteStart(this.Session.Object, this.Mode, Secret))
+                .Returns(this.Environment);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace NSonic.Impl.Connections
 
         public string Info()
         {
-            using (var session = this.SessionFactory.Create())
+            using (var session = this.SessionFactory.Create(this.Environment))
             {
                 return this.RequestWriter.WriteResult(session, "INFO");
             }
@@ -27,7 +27,7 @@ namespace NSonic.Impl.Connections
 
         public void Trigger(string action, string data)
         {
-            using (var session = this.SessionFactory.Create())
+            using (var session = this.SessionFactory.Create(this.Environment))
             {
                 this.RequestWriter.WriteOk(session, "TRIGGER", action, data);
             }

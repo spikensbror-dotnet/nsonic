@@ -1,6 +1,7 @@
 ﻿using NSonic.Utils;
 using System;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace NSonic.Impl.Connections
 {
@@ -23,6 +24,9 @@ namespace NSonic.Impl.Connections
             this.hostname = hostname;
             this.port = port;
             this.secret = secret;
+
+            // Default environment.
+            this.Environment = new EnvironmentResponse(1, 20000);
         }
 
         protected abstract string Mode { get; }
@@ -30,21 +34,15 @@ namespace NSonic.Impl.Connections
         protected ISonicRequestWriter RequestWriter { get; }
         protected ISonicSessionFactory SessionFactory { get; private set; }
 
+        public EnvironmentResponse Environment { get; private set; }
+
         public void Connect()
         {
             this.SessionFactory = this.sessionFactoryProvider.Create(hostname, port);
 
-            using (var session = this.SessionFactory.Create())
+            using (var session = this.SessionFactory.Create(this.Environment))
             {
-                var response = session.Read();
-                Assert.IsTrue(response.StartsWith("CONNECTED"), "Did not receive connection confirmation from the server");
-
-                session.Write("START", this.Mode, this.secret);
-
-                response = session.Read();
-                Assert.IsTrue(response.StartsWith("STARTED"), "Failed to start control session");
-
-                // TODO: Handle STARTED properly.
+                this.Environment = this.RequestWriter.WriteStart(session, this.Mode, this.secret);
             }
         }
 
@@ -52,7 +50,7 @@ namespace NSonic.Impl.Connections
         {
             if (this.SessionFactory != null)
             {
-                using (var session = this.SessionFactory.Create())
+                using (var session = this.SessionFactory.Create(this.Environment))
                 {
                     try
                     {

@@ -4,6 +4,6 @@ namespace NSonic.Impl
 {
     interface ISonicSessionFactory : IDisposable
     {
-        ISonicSession Create();
+        ISonicSession Create(EnvironmentResponse environment);
     }
 }

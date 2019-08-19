@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
+using System;
 
 namespace NSonic.Tests
 {
@@ -125,6 +126,78 @@ namespace NSonic.Tests
             // Act
 
             this.writer.WriteResult(this.session.Object, "TEST", "HELLO", "WORLD");
+        }
+
+        [TestMethod]
+        public void WriteStartShouldStartSessionAndReturnEnvironmentResponse()
+        {
+            // Arrange
+
+            var sequence = new MockSequence();
+
+            this.session
+                .InSequence(sequence)
+                .Setup(s => s.Read())
+                .Returns("CONNECTED <sonic-server v1.00>")
+                ;
+
+            this.session
+                .InSequence(sequence)
+                .Setup(s => s.Write("START", "TEST", "HELLO"))
+                ;
+
+            this.session
+                .InSequence(sequence)
+                .Setup(s => s.Read())
+                .Returns($"STARTED TEST protocol(1) buffer(20000)")
+                ;
+
+            // Act
+
+            var result = this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+
+            // Assert
+
+            Assert.AreEqual(1, result.Protocol);
+            Assert.AreEqual(20000, result.Buffer);
+            Assert.AreEqual((int)Math.Floor(20000 * 0.5 / 4), result.MaxBufferStringLength);
+        }
+
+
+        [TestMethod]
+        [ExpectedException(typeof(AssertionException))]
+        public void WriteStartShouldThrowAssertionExceptionIfServerDoesNotStartBySendingConnectionConfirmation()
+        {
+            // Arrange
+
+            this.session
+                .Setup(s => s.Read())
+                .Returns("NOT_CONNECTED");
+
+            // Act
+
+            this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(AssertionException))]
+        public void WriteStartShouldThrowAssertionExceptionIfStartCommandDoesNotRespondWithConfiguration()
+        {
+            // Arrange
+
+            this.session
+                .SetupSequence(s => s.Read())
+                .Returns("CONNECTED <sonic-server v1.00>")
+                .Returns("NOT_STARTED")
+                ;
+
+            this.session
+                .Setup(s => s.Write("START", "TEST", "HELLO"))
+                ;
+
+            // Act
+
+            this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
         }
     }
 }

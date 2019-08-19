@@ -11,6 +11,7 @@ namespace NSonic.Tests
     {
         private Mock<ITcpClient> client;
 
+        private EnvironmentResponse environment;
         private MemoryStream stream;
         private StreamWriter writer;
         private StreamReader reader;
@@ -22,6 +23,7 @@ namespace NSonic.Tests
         {
             this.client = new Mock<ITcpClient>();
 
+            this.environment = new EnvironmentResponse(1, 20000);
             this.stream = new MemoryStream();
             this.writer = new StreamWriter(this.stream);
             this.reader = new StreamReader(this.stream);
@@ -30,7 +32,7 @@ namespace NSonic.Tests
                 .Setup(c => c.GetStream())
                 .Returns(() => this.stream);
 
-            this.session = new SonicSession(this.client.Object);
+            this.session = new SonicSession(this.client.Object, environment);
         }
 
         [TestMethod]
@@ -71,6 +73,19 @@ namespace NSonic.Tests
             // Assert
 
             Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(AssertionException))]
+        public void ShouldThrowAssertionExceptionIfAttemptingToWriteTooLongMessage()
+        {
+            // Arrange
+
+            var expected = "".PadRight(this.environment.MaxBufferStringLength + 1, '+');
+
+            // Act
+
+            this.session.Write(expected);
         }
     }
 }

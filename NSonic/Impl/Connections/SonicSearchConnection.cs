@@ -25,7 +25,7 @@ namespace NSonic.Impl.Connections
             , string locale = null
             )
         {
-            using (var session = this.SessionFactory.Create())
+            using (var session = this.SessionFactory.Create(this.Environment))
             {
                 session.Write("QUERY"
                     , collection
@@ -52,7 +52,7 @@ namespace NSonic.Impl.Connections
 
         public string[] Suggest(string collection, string bucket, string word, int? limit = null)
         {
-            using (var session = this.SessionFactory.Create())
+            using (var session = this.SessionFactory.Create(this.Environment))
             {
                 session.Write("SUGGEST"
                     , collection

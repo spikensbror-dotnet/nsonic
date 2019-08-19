@@ -35,42 +35,11 @@ namespace NSonic.Tests.Connections
             // Act
 
             this.fixture.Connect();
-        }
 
-        [TestMethod]
-        [ExpectedException(typeof(AssertionException))]
-        public void ShouldThrowAssertionExceptionIfServerDoesNotStartBySendingConnectionConfirmation()
-        {
-            // Arrange
+            // Assert
 
-            this.Session
-                .Setup(s => s.Read())
-                .Returns("NOT_CONNECTED");
-
-            // Act
-
-            this.fixture.Connect();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(AssertionException))]
-        public void ShouldThrowAssertionExceptionIfStartCommandDoesNotRespondWithConfiguration()
-        {
-            // Arrange
-
-            this.Session
-                .SetupSequence(s => s.Read())
-                .Returns("CONNECTED <sonic-server v1.00>")
-                .Returns("NOT_STARTED")
-                ;
-
-            this.Session
-                .Setup(s => s.Write("START", this.Mode, Secret))
-                ;
-
-            // Act
-
-            this.fixture.Connect();
+            Assert.AreEqual(1, this.fixture.Environment.Protocol);
+            Assert.AreEqual(20000, this.fixture.Environment.Buffer);
         }
 
         [TestMethod]
