@@ -17,7 +17,12 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.fixture = new Fixture(this.SessionFactoryProvider, Hostname, Port, Secret);
+            this.fixture = new Fixture(this.SessionFactoryProvider
+                , this.RequestWriter.Object
+                , Hostname
+                , Port
+                , Secret
+                );
         }
 
         [TestMethod]
@@ -139,11 +144,12 @@ namespace NSonic.Tests.Connections
         class Fixture : SonicConnection
         {
             public Fixture(ISonicSessionFactoryProvider sessionFactoryProvider
+                , ISonicRequestWriter requestWriter
                 , string hostname
                 , int port
                 , string secret
                 )
-                : base(sessionFactoryProvider, hostname, port, secret)
+                : base(sessionFactoryProvider, requestWriter, hostname, port, secret)
             {
                 //
             }

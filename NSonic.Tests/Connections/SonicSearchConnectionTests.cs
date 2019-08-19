@@ -21,7 +21,12 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.connection = new SonicSearchConnection(this.SessionFactoryProvider, Hostname, Port, Secret);
+            this.connection = new SonicSearchConnection(this.SessionFactoryProvider
+                , this.RequestWriter.Object
+                , Hostname
+                , Port
+                , Secret
+                );
 
             this.SetupSuccessfulConnect(new MockSequence());
         }

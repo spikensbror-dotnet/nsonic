@@ -5,11 +5,12 @@ namespace NSonic.Impl.Connections
     sealed class SonicControlConnection : SonicConnection, ISonicControlConnection
     {
         public SonicControlConnection(ISonicSessionFactoryProvider sessionFactoryProvider
+            , ISonicRequestWriter requestWriter
             , string hostname
             , int port
             , string secret
             )
-            : base(sessionFactoryProvider, hostname, port, secret)
+            : base(sessionFactoryProvider, requestWriter, hostname, port, secret)
         {
             //
         }
@@ -20,23 +21,7 @@ namespace NSonic.Impl.Connections
         {
             using (var session = this.SessionFactory.Create())
             {
-                session.Write("INFO");
-
-                var response = session.Read();
-                Assert.IsTrue(response.StartsWith("RESULT"), "Info returned invalid data");
-
-                return response;
-            }
-        }
-
-        public void Ping()
-        {
-            using (var session = this.SessionFactory.Create())
-            {
-                session.Write("PING");
-
-                var response = session.Read();
-                Assert.IsTrue(response.StartsWith("PONG"), "Ping failed");
+                return this.RequestWriter.WriteResult(session, "INFO");
             }
         }
 
@@ -44,10 +29,7 @@ namespace NSonic.Impl.Connections
         {
             using (var session = this.SessionFactory.Create())
             {
-                session.Write("TRIGGER", action, data);
-
-                var response = session.Read();
-                Assert.IsTrue(response.StartsWith("OK"), "Received unexpected response on trigger");
+                this.RequestWriter.WriteOk(session, "TRIGGER", action, data);
             }
         }
     }

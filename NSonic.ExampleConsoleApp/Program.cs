@@ -16,7 +16,6 @@ namespace NSonic.ExampleConsoleApp
                 using (var control = NSonic.Control(hostname, port, secret))
                 {
                     control.Connect();
-                    control.Ping();
 
                     var info = control.Info();
                     Console.WriteLine(info);
@@ -31,10 +30,18 @@ namespace NSonic.ExampleConsoleApp
 
                     var result2 = search.Suggest("messages", "user:1", "s");
                     Console.WriteLine($"Suggest: {string.Join(", ", result2)}");
-
-                    Console.WriteLine("Press any key to exit...");
-                    Console.ReadKey(true);
                 }
+
+                using (var ingest = NSonic.Ingest(hostname, port, secret))
+                {
+                    ingest.Connect();
+
+                    var result = ingest.Count("messages", "user:1");
+                    Console.WriteLine($"Count for `messages user:1`: {result}");
+                }
+
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey(true);
             }
             catch (Exception e)
             {

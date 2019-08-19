@@ -16,7 +16,13 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.connection = new SonicControlConnection(this.SessionFactoryProvider, Hostname, Port, Secret);
+            this.connection = new SonicControlConnection(this.SessionFactoryProvider
+                , this.RequestWriter.Object
+                , Hostname
+                , Port
+                , Secret
+                );
+
             this.SetupSuccessfulConnect(new MockSequence());
         }
 
@@ -31,96 +37,14 @@ namespace NSonic.Tests.Connections
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("INFO"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("RESULT example")
-                ;
+            this.RequestWriter
+                .Setup(rw => rw.WriteResult(this.Session.Object, "INFO"))
+                .Returns("example");
 
             // Act / Assert
 
             this.connection.Connect();
-            Assert.AreEqual("RESULT example", this.connection.Info());
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(AssertionException))]
-        public void InfoShouldThrowAssertionExceptionIfResponseIsInvalid()
-        {
-            // Arrange
-
-            var sequence = new MockSequence();
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("INFO"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("NOT_RESULT example");
-
-            // Act
-
-            this.connection.Connect();
-            this.connection.Info();
-        }
-
-        [TestMethod]
-        public void PingShouldDoNothingIfSuccessful()
-        {
-            // Arrange
-
-            var sequence = new MockSequence();
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("PING"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("PONG")
-                ;
-
-            // Act
-
-            this.connection.Connect();
-            this.connection.Ping();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(AssertionException))]
-        public void PingShouldThrowAssertionExceptionIfUnsuccessful()
-        {
-            // Arrange
-
-            var sequence = new MockSequence();
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("PING"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("WRONG")
-                ;
-
-            // Act
-
-            this.connection.Connect();
-            this.connection.Ping();
+            Assert.AreEqual("example", this.connection.Info());
         }
 
         [TestMethod]
@@ -128,48 +52,19 @@ namespace NSonic.Tests.Connections
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("TRIGGER", "testing", "test_data"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("OK")
+            this.RequestWriter
+                .Setup(rw => rw.WriteOk(this.Session.Object, "TRIGGER", "testing", "test_data"))
+                .Verifiable()
                 ;
 
             // Act
 
             this.connection.Connect();
             this.connection.Trigger("testing", "test_data");
-        }
 
-        [TestMethod]
-        [ExpectedException(typeof(AssertionException))]
-        public void TriggerShouldThrowAssertionExceptionIfResponseIsInvalid()
-        {
-            // Arrange
+            // Assert
 
-            var sequence = new MockSequence();
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("TRIGGER", "testing", "test_data"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("NOT_OK")
-                ;
-
-            // Act
-
-            this.connection.Connect();
-            this.connection.Trigger("testing", "test_data");
+            this.RequestWriter.Verify();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicControlConnection(SessionFactoryProvider, hostname, port, secret);
+            return new SonicControlConnection(SessionFactoryProvider, new SonicRequestWriter(), hostname, port, secret);
         }
 
         public static ISonicIngestConnection Ingest(string hostname
@@ -25,7 +25,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicIngestConnection(SessionFactoryProvider, hostname, port, secret);
+            return new SonicIngestConnection(SessionFactoryProvider, new SonicRequestWriter(), hostname, port, secret);
         }
 
         public static ISonicSearchConnection Search(string hostname
@@ -33,7 +33,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicSearchConnection(SessionFactoryProvider, hostname, port, secret);
+            return new SonicSearchConnection(SessionFactoryProvider, new SonicRequestWriter(), hostname, port, secret);
         }
     }
 }

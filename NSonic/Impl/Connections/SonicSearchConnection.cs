@@ -5,11 +5,12 @@ namespace NSonic.Impl.Connections
     sealed class SonicSearchConnection : SonicConnection, ISonicSearchConnection
     {
         public SonicSearchConnection(ISonicSessionFactoryProvider sessionFactoryProvider
+            , ISonicRequestWriter requestWriter
             , string hostname
             , int port
             , string secret
             )
-            : base(sessionFactoryProvider, hostname, port, secret)
+            : base(sessionFactoryProvider, requestWriter, hostname, port, secret)
         {
             //
         }

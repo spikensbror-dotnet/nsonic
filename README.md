@@ -11,9 +11,7 @@ NSonic is an open-source .NET client implementation for the [Sonic](https://gith
 
 There are still some things left before it is "feature-complete":
 
-* Implement ingest connections.
 * Handle the STARTED response appropriately.
-* Remove `ISonicControlConnection.Ping`.
 * Write usage documentation.
 
 Once these things have been completed, version will be bumped to `1.1.0`.

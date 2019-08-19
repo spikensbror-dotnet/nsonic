@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
+using NSonic.Impl.Connections;
 
 namespace NSonic.Tests.Connections
 {
@@ -11,15 +12,19 @@ namespace NSonic.Tests.Connections
         protected const int Port = 1337;
         protected const string Secret = "top_secret";
 
-        internal Mock<ISonicSession> Session { get; private set; }
-        internal ISonicSessionFactoryProvider SessionFactoryProvider { get; private set; }
         protected abstract string Mode { get; }
+
+        internal Mock<ISonicSession> Session { get; private set; }
+        internal Mock<ISonicRequestWriter> RequestWriter { get; private set; }
+        internal ISonicSessionFactoryProvider SessionFactoryProvider { get; private set; }
 
         [TestInitialize]
         public virtual void Initialize()
         {
             this.Session = new Mock<ISonicSession>(MockBehavior.Strict);
             this.Session.Setup(s => s.Dispose());
+
+            this.RequestWriter = new Mock<ISonicRequestWriter>(MockBehavior.Strict);
 
             this.SessionFactoryProvider = Mock.Of<ISonicSessionFactoryProvider>(ssfp => ssfp.Create(Hostname, Port).Create() == this.Session.Object);
         }

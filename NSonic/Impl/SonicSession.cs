@@ -1,6 +1,7 @@
 ﻿using NSonic.Impl.Net;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace NSonic.Impl
@@ -33,7 +34,7 @@ namespace NSonic.Impl
 
         public void Write(params string[] args)
         {
-            var message = string.Join(" ", args).Trim();
+            var message = string.Join(" ", args.Where(a => !string.IsNullOrEmpty(a))).Trim();
 
             var writer = new StreamWriter(this.Client.GetStream());
             writer.WriteLine(message);

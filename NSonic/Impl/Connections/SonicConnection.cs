@@ -12,12 +12,14 @@ namespace NSonic.Impl.Connections
         private readonly string secret;
 
         protected SonicConnection(ISonicSessionFactoryProvider sessionFactoryProvider
+            , ISonicRequestWriter requestWriter
             , string hostname
             , int port
             , string secret
             )
         {
             this.sessionFactoryProvider = sessionFactoryProvider;
+            this.RequestWriter = requestWriter;
             this.hostname = hostname;
             this.port = port;
             this.secret = secret;
@@ -25,6 +27,7 @@ namespace NSonic.Impl.Connections
 
         protected abstract string Mode { get; }
 
+        protected ISonicRequestWriter RequestWriter { get; }
         protected ISonicSessionFactory SessionFactory { get; private set; }
 
         public void Connect()
