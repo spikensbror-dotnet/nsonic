@@ -3,6 +3,7 @@ using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Net;
 using System.IO;
+using System.Threading;
 
 namespace NSonic.Tests
 {
@@ -32,7 +33,7 @@ namespace NSonic.Tests
                 .Setup(c => c.GetStream())
                 .Returns(() => this.stream);
 
-            this.session = new SonicSession(this.client.Object, environment);
+            this.session = new SonicSession(this.client.Object, new SemaphoreSlim(1, 1), environment);
         }
 
         [TestMethod]
