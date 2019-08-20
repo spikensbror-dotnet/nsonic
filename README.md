@@ -7,11 +7,59 @@
 
 NSonic is an open-source .NET client implementation for the [Sonic](https://github.com/valeriansaliou/sonic) search backend.
 
-## TODO
+## Usage
 
-There are still some things left before it is "feature-complete":
+### Search mode
 
-* Write usage documentation.
+```C#
+using (var search = NSonic.Search(hostname, port, secret))
+{
+	search.Connect();
 
-Once these things have been completed, version will be bumped to `1.1.0`.
+	var queryResults = search.Query("messages", "user:1", "s");
+	Console.WriteLine($"QUERY: {string.Join(", ", queryResults)}");
 
+	var suggestResults = search.Suggest("messages", "user:1", "s");
+	Console.WriteLine($"SUGGEST: {string.Join(", ", suggestResults)}");
+}
+```
+
+### Ingest mode
+
+```C#
+using (var ingest = NSonic.Ingest(hostname, port, secret))
+{
+	ingest.Connect();
+
+	ingest.Push("messages", "user:1", "conversation:1", "This is an example push.", locale: null);
+
+	var popResult = ingest.Pop("messages", "user:1", "conversation:1", "This is an example push.");
+	Console.WriteLine($"POP: {popResult}");
+
+	var countResult = ingest.Count("messages", "user:1");
+	Console.WriteLine($"COUNT: {countResult}");
+
+	var flushCollectionResult = ingest.FlushCollection("messages");
+	Console.WriteLine($"FLUSHC: {flushCollectionResult}");
+
+	var flushBucketResult = ingest.FlushBucket("messages", "user:1");
+	Console.WriteLine($"FLUSHB: {flushBucketResult}");
+
+	var flushObjectResult = ingest.FlushObject("messages", "user:1", "conversation:1");
+	Console.WriteLine($"FLUSHO: {flushObjectResult}");
+}
+```
+
+### Control mode
+
+```C#
+using (var control = NSonic.Control(hostname, port, secret))
+{
+	control.Connect();
+
+	var info = control.Info();
+	Console.WriteLine($"INFO: {info}");
+
+	control.Trigger("consolidate");
+}
+```

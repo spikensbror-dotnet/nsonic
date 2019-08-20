@@ -6,6 +6,7 @@
     <PackageProjectUrl>https://github.com/spikensbror-dotnet/nsonic</PackageProjectUrl>
     <Description>NSonic is an open-source .NET client implementation for the Sonic search backend.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
 </Project>

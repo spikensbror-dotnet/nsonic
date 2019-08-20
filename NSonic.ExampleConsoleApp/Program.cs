@@ -18,26 +18,42 @@ namespace NSonic.ExampleConsoleApp
                     control.Connect();
 
                     var info = control.Info();
-                    Console.WriteLine(info);
+                    Console.WriteLine($"INFO: {info}");
+
+                    control.Trigger("consolidate");
                 }
 
                 using (var search = NSonic.Search(hostname, port, secret))
                 {
                     search.Connect();
 
-                    var result = search.Query("messages", "user:1", "s");
-                    Console.WriteLine($"Query: {string.Join(", ", result)}");
+                    var queryResults = search.Query("messages", "user:1", "s");
+                    Console.WriteLine($"QUERY: {string.Join(", ", queryResults)}");
 
-                    var result2 = search.Suggest("messages", "user:1", "s");
-                    Console.WriteLine($"Suggest: {string.Join(", ", result2)}");
+                    var suggestResults = search.Suggest("messages", "user:1", "s");
+                    Console.WriteLine($"SUGGEST: {string.Join(", ", suggestResults)}");
                 }
 
                 using (var ingest = NSonic.Ingest(hostname, port, secret))
                 {
                     ingest.Connect();
 
-                    var result = ingest.Count("messages", "user:1");
-                    Console.WriteLine($"Count for `messages user:1`: {result}");
+                    ingest.Push("messages", "user:1", "conversation:1", "This is an example push.", locale: null);
+
+                    var popResult = ingest.Pop("messages", "user:1", "conversation:1", "This is an example push.");
+                    Console.WriteLine($"POP: {popResult}");
+
+                    var countResult = ingest.Count("messages", "user:1");
+                    Console.WriteLine($"COUNT: {countResult}");
+
+                    var flushCollectionResult = ingest.FlushCollection("messages");
+                    Console.WriteLine($"FLUSHC: {flushCollectionResult}");
+
+                    var flushBucketResult = ingest.FlushBucket("messages", "user:1");
+                    Console.WriteLine($"FLUSHB: {flushBucketResult}");
+
+                    var flushObjectResult = ingest.FlushObject("messages", "user:1", "conversation:1");
+                    Console.WriteLine($"FLUSHO: {flushObjectResult}");
                 }
 
                 Console.WriteLine("Press any key to exit...");

@@ -25,7 +25,7 @@ namespace NSonic.Impl.Connections
             }
         }
 
-        public void Trigger(string action, string data)
+        public void Trigger(string action, string data = null)
         {
             using (var session = this.SessionFactory.Create(this.Environment))
             {

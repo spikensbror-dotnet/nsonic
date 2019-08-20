@@ -3,13 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSonic", "NSonic\NSonic.csproj", "{A670BCF9-A30A-473B-9F01-185059DF5333}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSonic", "NSonic\NSonic.csproj", "{A670BCF9-A30A-473B-9F01-185059DF5333}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSonic.ExampleConsoleApp", "NSonic.ExampleConsoleApp\NSonic.ExampleConsoleApp.csproj", "{D6418809-1E11-46E5-B10E-4AA06A2EFF35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSonic.ExampleConsoleApp", "NSonic.ExampleConsoleApp\NSonic.ExampleConsoleApp.csproj", "{D6418809-1E11-46E5-B10E-4AA06A2EFF35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSonic.TerminalApp", "NSonic.TerminalApp\NSonic.TerminalApp.csproj", "{A2D20714-E74B-4789-8671-B770EE5F0C32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSonic.TerminalApp", "NSonic.TerminalApp\NSonic.TerminalApp.csproj", "{A2D20714-E74B-4789-8671-B770EE5F0C32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSonic.Tests", "NSonic.Tests\NSonic.Tests.csproj", "{EC6D186A-EF33-4D66-8DAA-9F55C9313C92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSonic.Tests", "NSonic.Tests\NSonic.Tests.csproj", "{EC6D186A-EF33-4D66-8DAA-9F55C9313C92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C6008EF8-EA3D-4968-85B1-F4C8DF77079D}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+		LICENSE = LICENSE
+		Production.runsettings = Production.runsettings
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
