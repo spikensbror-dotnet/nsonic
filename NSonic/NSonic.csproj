@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Kimmy Andersson</Authors>
+    <Authors>spikensbror</Authors>
     <PackageProjectUrl>https://github.com/spikensbror-dotnet/nsonic</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/spikensbror-dotnet/nsonic</RepositoryUrl>
     <Description>NSonic is an open-source .NET client implementation for the Sonic search backend.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
