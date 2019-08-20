@@ -34,15 +34,23 @@ steps:
     codeCoverageTool: 'cobertura'
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/$(projectName).Tests/coverage.cobertura.xml'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet pack for $(projectName)'
+- task: DotNetCoreCLI@2
   inputs:
     command: 'pack'
-    feedsToUse: 'select'
-    packagesToPack: '$(projectName)/*.csproj'
+    packagesToPack: '**/*.csproj'
     configuration: 'Release'
-    packDestination: '$(Build.ArtifactStagingDirectory)/packages'
+    packDirectory: '$(Build.ArtifactStagingDirectory)/packages'
     versioningScheme: 'byBuildNumber'
+
+#- task: NuGetCommand@2
+#  displayName: 'NuGet pack for $(projectName)'
+#  inputs:
+#    command: 'pack'
+#    feedsToUse: 'select'
+#    packagesToPack: '$(projectName)/*.csproj'
+#    configuration: 'Release'
+#    packDestination: '$(Build.ArtifactStagingDirectory)/packages'
+#    versioningScheme: 'byBuildNumber'
     
 - task: PublishBuildArtifacts@1
   displayName: 'Publish packages artifact'
