@@ -12,7 +12,7 @@ NSonic is an open-source .NET client implementation for the [Sonic](https://gith
 ### Search mode
 
 ```C#
-using (var search = NSonic.Search(hostname, port, secret))
+using (var search = NSonicFactory.Search(hostname, port, secret))
 {
 	search.Connect();
 
@@ -27,7 +27,7 @@ using (var search = NSonic.Search(hostname, port, secret))
 ### Ingest mode
 
 ```C#
-using (var ingest = NSonic.Ingest(hostname, port, secret))
+using (var ingest = NSonicFactory.Ingest(hostname, port, secret))
 {
 	ingest.Connect();
 
@@ -53,7 +53,7 @@ using (var ingest = NSonic.Ingest(hostname, port, secret))
 ### Control mode
 
 ```C#
-using (var control = NSonic.Control(hostname, port, secret))
+using (var control = NSonicFactory.Control(hostname, port, secret))
 {
 	control.Connect();
 

@@ -13,7 +13,7 @@ namespace NSonic.ExampleConsoleApp
 
             try
             {
-                using (var control = NSonic.Control(hostname, port, secret))
+                using (var control = NSonicFactory.Control(hostname, port, secret))
                 {
                     control.Connect();
 
@@ -23,7 +23,7 @@ namespace NSonic.ExampleConsoleApp
                     control.Trigger("consolidate");
                 }
 
-                using (var search = NSonic.Search(hostname, port, secret))
+                using (var search = NSonicFactory.Search(hostname, port, secret))
                 {
                     search.Connect();
 
@@ -34,7 +34,7 @@ namespace NSonic.ExampleConsoleApp
                     Console.WriteLine($"SUGGEST: {string.Join(", ", suggestResults)}");
                 }
 
-                using (var ingest = NSonic.Ingest(hostname, port, secret))
+                using (var ingest = NSonicFactory.Ingest(hostname, port, secret))
                 {
                     ingest.Connect();
 

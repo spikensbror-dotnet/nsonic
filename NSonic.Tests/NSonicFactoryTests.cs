@@ -3,7 +3,7 @@
 namespace NSonic.Tests
 {
     [TestClass]
-    public class NSonicTests
+    public class NSonicFactoryTests
     {
         private const string Hostname = "localhost";
         private const int Port = 1491;
@@ -12,7 +12,7 @@ namespace NSonic.Tests
         [TestMethod]
         public void ShouldBeAbleToCreateSearchConnection()
         {
-            using (var connection = NSonic.Search(Hostname, Port, Secret))
+            using (var connection = NSonicFactory.Search(Hostname, Port, Secret))
             {
                 Assert.IsNotNull(connection);
             }
@@ -21,7 +21,7 @@ namespace NSonic.Tests
         [TestMethod]
         public void ShouldBeAbleToCreateControlConnection()
         {
-            using (var connection = NSonic.Control(Hostname, Port, Secret))
+            using (var connection = NSonicFactory.Control(Hostname, Port, Secret))
             {
                 Assert.IsNotNull(connection);
             }
@@ -30,7 +30,7 @@ namespace NSonic.Tests
         [TestMethod]
         public void ShouldBeAbleToCreateIngestConnection()
         {
-            using (var connection = NSonic.Ingest(Hostname, Port, Secret))
+            using (var connection = NSonicFactory.Ingest(Hostname, Port, Secret))
             {
                 Assert.IsNotNull(connection);
             }

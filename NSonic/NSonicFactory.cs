@@ -6,11 +6,11 @@ namespace NSonic
     /// <summary>
     /// Constructs and bootstraps Sonic connections.
     /// </summary>
-    public static class NSonic
+    public static class NSonicFactory
     {
         private static ISonicSessionFactoryProvider SessionFactoryProvider { get; set; }
 
-        static NSonic()
+        static NSonicFactory()
         {
             SessionFactoryProvider = new SonicSessionFactoryProvider();
         }
