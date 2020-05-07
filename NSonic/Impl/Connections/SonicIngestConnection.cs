@@ -77,7 +77,7 @@ namespace NSonic.Impl.Connections
                     , bucket
                     , @object
                     , $"\"{text}\""
-                    , !string.IsNullOrEmpty(locale) ? $"LOCALE({locale})" : ""
+                    , !string.IsNullOrEmpty(locale) ? $"LANG({locale})" : ""
                     );
             }
         }

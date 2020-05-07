@@ -77,7 +77,7 @@ namespace NSonic.Tests.Connections
                         , $"\"{Terms}\""
                         , $"LIMIT({limit})"
                         , $"OFFSET({offset})"
-                        , $"LOCALE({locale})"
+                        , $"LANG({locale})"
                     )
                 )
                 ;

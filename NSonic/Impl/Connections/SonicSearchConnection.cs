@@ -33,7 +33,7 @@ namespace NSonic.Impl.Connections
                     , $"\"{terms}\""
                     , limit.HasValue ? $"LIMIT({limit})" : ""
                     , offset.HasValue ? $"OFFSET({offset})" : ""
-                    , !string.IsNullOrEmpty(locale) ? $"LOCALE({locale})" : ""
+                    , !string.IsNullOrEmpty(locale) ? $"LANG({locale})" : ""
                     );
 
                 var response = session.Read();

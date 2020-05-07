@@ -122,7 +122,7 @@ namespace NSonic.Tests.Connections
             // Arrange
 
             this.RequestWriter
-                .Setup(rw => rw.WriteOk(this.Session.Object, "PUSH", "collection_name", "bucket_name", "obj_id", "\"term\"", "LOCALE(test)"))
+                .Setup(rw => rw.WriteOk(this.Session.Object, "PUSH", "collection_name", "bucket_name", "obj_id", "\"term\"", "LANG(test)"))
                 .Verifiable();
 
             // Act
