@@ -30,14 +30,12 @@ namespace NSonic.Tests
             this.session
                 .InSequence(sequence)
                 .Setup(s => s.Write("TEST", "HELLO", "WORLD"))
-                .Verifiable()
                 ;
 
             this.session
                 .InSequence(sequence)
                 .Setup(s => s.Read())
                 .Returns("OK")
-                .Verifiable()
                 ;
 
             // Act
@@ -46,7 +44,7 @@ namespace NSonic.Tests
 
             // Assert
 
-            this.session.Verify();
+            this.session.VerifyAll();
         }
 
         [TestMethod]
@@ -83,14 +81,12 @@ namespace NSonic.Tests
             this.session
                 .InSequence(sequence)
                 .Setup(s => s.Write("TEST", "HELLO", "WORLD"))
-                .Verifiable()
                 ;
 
             this.session
                 .InSequence(sequence)
                 .Setup(s => s.Read())
                 .Returns("RESULT hello sir")
-                .Verifiable()
                 ;
 
             // Act
@@ -101,7 +97,7 @@ namespace NSonic.Tests
 
             Assert.AreEqual("hello sir", result);
 
-            this.session.Verify();
+            this.session.VerifyAll();
         }
 
         [TestMethod]
