@@ -1,22 +1,23 @@
-﻿namespace NSonic
+﻿using System.Threading.Tasks;
+
+namespace NSonic
 {
     /// <summary>
-    /// A Sonic control connection is used to interact with a Sonic connection in
-    /// control mode.
+    /// Defines the asynchronous methods available for Sonic control mode connections.
     /// </summary>
-    public interface ISonicControlConnection : ISonicConnection, IAsyncSonicControlConnection
+    public interface IAsyncSonicControlConnection : ISonicConnection
     {
         /// <summary>
         /// Retrieves the Sonic server information.
         /// </summary>
         /// <returns>The server information received from Sonic.</returns>
-        string Info();
+        Task<string> InfoAsync();
 
         /// <summary>
         /// Triggers an action on the Sonic server.
         /// </summary>
         /// <param name="action">The action to trigger.</param>
         /// <param name="data">The data to pass to the action.</param>
-        void Trigger(string action, string data = null);
+        Task TriggerAsync(string action, string data = null);
     }
 }

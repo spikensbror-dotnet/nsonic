@@ -1,10 +1,11 @@
-﻿namespace NSonic
+﻿using System.Threading.Tasks;
+
+namespace NSonic
 {
     /// <summary>
-    /// A Sonic search connection is used to interact with a Sonic connection in
-    /// search mode.
+    /// Defines the asynchronous methods available for Sonic search mode connections.
     /// </summary>
-    public interface ISonicSearchConnection : ISonicConnection, IAsyncSonicSearchConnection
+    public interface IAsyncSonicSearchConnection : ISonicConnection
     {
         /// <summary>
         /// Queries the specified bucket for the given terms.
@@ -16,7 +17,7 @@
         /// <param name="offset">The amount of results to skip.</param>
         /// <param name="locale">The locale to query for.</param>
         /// <returns>An array of objects that match the query.</returns>
-        string[] Query(string collection
+        Task<string[]> QueryAsync(string collection
             , string bucket
             , string terms
             , int? limit = null
@@ -32,7 +33,7 @@
         /// <param name="word">The word to get suggestions for.</param>
         /// <param name="limit">The maximum amount of results to return.</param>
         /// <returns>An array of suggestions that match the word.</returns>
-        string[] Suggest(string collection
+        Task<string[]> SuggestAsync(string collection
             , string bucket
             , string word
             , int? limit = null

@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Connections;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests.Connections
 {
@@ -35,6 +36,23 @@ namespace NSonic.Tests.Connections
             // Act
 
             this.fixture.Connect();
+
+            // Assert
+
+            Assert.AreEqual(1, this.fixture.Environment.Protocol);
+            Assert.AreEqual(20000, this.fixture.Environment.Buffer);
+        }
+
+        [TestMethod]
+        public async Task ShouldBeAbleToConnectAsync()
+        {
+            // Arrange
+
+            this.SetupSuccessfulConnectAsync(new MockSequence());
+
+            // Act
+
+            await this.fixture.ConnectAsync();
 
             // Assert
 

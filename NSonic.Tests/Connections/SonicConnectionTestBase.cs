@@ -2,6 +2,7 @@
 using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Connections;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests.Connections
 {
@@ -37,6 +38,14 @@ namespace NSonic.Tests.Connections
                 .InSequence(sequence)
                 .Setup(rw => rw.WriteStart(this.Session.Object, this.Mode, Secret))
                 .Returns(this.Environment);
+        }
+
+        protected void SetupSuccessfulConnectAsync(MockSequence sequence)
+        {
+            this.RequestWriter
+                .InSequence(sequence)
+                .Setup(rw => rw.WriteStartAsync(this.Session.Object, this.Mode, Secret))
+                .Returns(Task.FromResult(this.Environment));
         }
     }
 }

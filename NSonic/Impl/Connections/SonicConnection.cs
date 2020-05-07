@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
@@ -38,11 +39,21 @@ namespace NSonic.Impl.Connections
 
         public void Connect()
         {
-            this.SessionFactory = this.sessionFactoryProvider.Create(hostname, port);
+            this.SessionFactory = this.sessionFactoryProvider.Create(this.hostname, this.port);
 
             using (var session = this.SessionFactory.Create(this.Environment))
             {
                 this.Environment = this.RequestWriter.WriteStart(session, this.Mode, this.secret);
+            }
+        }
+
+        public async Task ConnectAsync()
+        {
+            this.SessionFactory = this.sessionFactoryProvider.Create(this.hostname, this.port);
+
+            using (var session = this.SessionFactory.Create(this.Environment))
+            {
+                this.Environment = await this.RequestWriter.WriteStartAsync(session, this.Mode, this.secret);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using NSonic.Utils;
+using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
@@ -25,11 +26,27 @@ namespace NSonic.Impl.Connections
             }
         }
 
+        public async Task<string> InfoAsync()
+        {
+            using (var session = this.SessionFactory.Create(this.Environment))
+            {
+                return await this.RequestWriter.WriteResultAsync(session, "INFO");
+            }
+        }
+
         public void Trigger(string action, string data = null)
         {
             using (var session = this.SessionFactory.Create(this.Environment))
             {
                 this.RequestWriter.WriteOk(session, "TRIGGER", action, data);
+            }
+        }
+
+        public async Task TriggerAsync(string action, string data = null)
+        {
+            using (var session = this.SessionFactory.Create(this.Environment))
+            {
+                await this.RequestWriter.WriteOkAsync(session, "TRIGGER", action, data);
             }
         }
     }

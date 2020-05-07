@@ -1,6 +1,7 @@
 ﻿using NSonic.Utils;
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
@@ -14,11 +15,29 @@ namespace NSonic.Impl
             Assert.IsTrue(response.StartsWith("OK"), "Expected OK response");
         }
 
+        public async Task WriteOkAsync(ISonicSession session, params string[] args)
+        {
+            await session.WriteAsync(args);
+
+            var response = await session.ReadAsync();
+            Assert.IsTrue(response.StartsWith("OK"), "Expected OK response");
+        }
+
         public string WriteResult(ISonicSession session, params string[] args)
         {
             session.Write(args);
 
             var response = session.Read();
+            Assert.IsTrue(response.StartsWith("RESULT "), "Expected RESULT response");
+
+            return response.Substring("RESULT ".Length);
+        }
+
+        public async Task<string> WriteResultAsync(ISonicSession session, params string[] args)
+        {
+            await session.WriteAsync(args);
+
+            var response = await session.ReadAsync();
             Assert.IsTrue(response.StartsWith("RESULT "), "Expected RESULT response");
 
             return response.Substring("RESULT ".Length);
@@ -31,7 +50,21 @@ namespace NSonic.Impl
 
             session.Write("START", mode, secret);
 
-            response = session.Read();
+            return this.ParseStartResponse(session.Read());
+        }
+
+        public async Task<EnvironmentResponse> WriteStartAsync(ISonicSession session, string mode, string secret)
+        {
+            var response = await session.ReadAsync();
+            Assert.IsTrue(response.StartsWith("CONNECTED"), "Did not receive connection confirmation from the server");
+
+            await session.WriteAsync("START", mode, secret);
+
+            return this.ParseStartResponse(await session.ReadAsync());
+        }
+
+        private EnvironmentResponse ParseStartResponse(string response)
+        {
             Assert.IsTrue(response.StartsWith("STARTED"), "Failed to start control session");
 
             var protocol = 0;
