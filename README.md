@@ -69,7 +69,7 @@ using (var control = NSonicFactory.Control(hostname, port, secret))
 ### v1.2
 
 * Implemented asynchronous equivalents to most functionality.
-* Changed the versioning scheme to conform to Semantic Versioning.
+* Changed the versioning scheme to conform to [Semantic Versioning](https://semver.org/).
 
 ### v1.1.0.9
 
