@@ -9,6 +9,11 @@ NSonic is an open-source .NET client implementation for the [Sonic](https://gith
 
 ## Usage
 
+### Async
+
+Most methods have asynchronous equivalents starting at version `1.2.x`. Simply append the method name
+with `Async`, i.e. `control.ConnectAsync`, `search.QueryAsync`, etc.
+
 ### Search mode
 
 ```C#
