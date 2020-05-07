@@ -66,11 +66,16 @@ using (var control = NSonicFactory.Control(hostname, port, secret))
 
 ## Changelog
 
+### v1.2
+
+* Implemented asynchronous equivalents to most functionality.
+* Changed the versioning scheme to conform to Semantic Versioning.
+
 ### v1.1.0.9
 
 * Fixed locale for ingest push and search queries.
 
-### v1.1.0.5
+### v1.1
 
 * First stable release.
 
