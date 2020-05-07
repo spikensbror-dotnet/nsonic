@@ -1,5 +1,4 @@
-﻿using NSonic.Utils;
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -12,7 +11,7 @@ namespace NSonic.Impl
             session.Write(args);
 
             var response = session.Read();
-            Assert.IsTrue(response.StartsWith("OK"), "Expected OK response");
+            SonicRequestWriterAssert.Ok(response);
         }
 
         public async Task WriteOkAsync(ISonicSession session, params string[] args)
@@ -20,7 +19,7 @@ namespace NSonic.Impl
             await session.WriteAsync(args);
 
             var response = await session.ReadAsync();
-            Assert.IsTrue(response.StartsWith("OK"), "Expected OK response");
+            SonicRequestWriterAssert.Ok(response);
         }
 
         public string WriteResult(ISonicSession session, params string[] args)
@@ -28,7 +27,7 @@ namespace NSonic.Impl
             session.Write(args);
 
             var response = session.Read();
-            Assert.IsTrue(response.StartsWith("RESULT "), "Expected RESULT response");
+            SonicRequestWriterAssert.Result(response);
 
             return response.Substring("RESULT ".Length);
         }
@@ -38,7 +37,7 @@ namespace NSonic.Impl
             await session.WriteAsync(args);
 
             var response = await session.ReadAsync();
-            Assert.IsTrue(response.StartsWith("RESULT "), "Expected RESULT response");
+            SonicRequestWriterAssert.Result(response);
 
             return response.Substring("RESULT ".Length);
         }
@@ -46,7 +45,7 @@ namespace NSonic.Impl
         public EnvironmentResponse WriteStart(ISonicSession session, string mode, string secret)
         {
             var response = session.Read();
-            Assert.IsTrue(response.StartsWith("CONNECTED"), "Did not receive connection confirmation from the server");
+            SonicRequestWriterAssert.Connected(response);
 
             session.Write("START", mode, secret);
 
@@ -56,7 +55,7 @@ namespace NSonic.Impl
         public async Task<EnvironmentResponse> WriteStartAsync(ISonicSession session, string mode, string secret)
         {
             var response = await session.ReadAsync();
-            Assert.IsTrue(response.StartsWith("CONNECTED"), "Did not receive connection confirmation from the server");
+            SonicRequestWriterAssert.Connected(response);
 
             await session.WriteAsync("START", mode, secret);
 
@@ -65,7 +64,7 @@ namespace NSonic.Impl
 
         private EnvironmentResponse ParseStartResponse(string response)
         {
-            Assert.IsTrue(response.StartsWith("STARTED"), "Failed to start control session");
+            SonicRequestWriterAssert.Started(response);
 
             var protocol = 0;
             var buffer = 0;

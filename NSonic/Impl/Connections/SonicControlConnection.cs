@@ -20,7 +20,7 @@ namespace NSonic.Impl.Connections
 
         public string Info()
         {
-            using (var session = this.SessionFactory.Create(this.Environment))
+            using (var session = this.CreateSession())
             {
                 return this.RequestWriter.WriteResult(session, "INFO");
             }
@@ -28,7 +28,7 @@ namespace NSonic.Impl.Connections
 
         public async Task<string> InfoAsync()
         {
-            using (var session = this.SessionFactory.Create(this.Environment))
+            using (var session = this.CreateSession())
             {
                 return await this.RequestWriter.WriteResultAsync(session, "INFO");
             }
@@ -36,7 +36,7 @@ namespace NSonic.Impl.Connections
 
         public void Trigger(string action, string data = null)
         {
-            using (var session = this.SessionFactory.Create(this.Environment))
+            using (var session = this.CreateSession())
             {
                 this.RequestWriter.WriteOk(session, "TRIGGER", action, data);
             }
@@ -44,7 +44,7 @@ namespace NSonic.Impl.Connections
 
         public async Task TriggerAsync(string action, string data = null)
         {
-            using (var session = this.SessionFactory.Create(this.Environment))
+            using (var session = this.CreateSession())
             {
                 await this.RequestWriter.WriteOkAsync(session, "TRIGGER", action, data);
             }

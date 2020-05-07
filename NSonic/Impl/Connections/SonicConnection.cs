@@ -1,7 +1,6 @@
 ﻿using NSonic.Utils;
 using System;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
@@ -39,9 +38,9 @@ namespace NSonic.Impl.Connections
 
         public void Connect()
         {
-            this.SessionFactory = this.sessionFactoryProvider.Create(this.hostname, this.port);
+            this.CreateSessionFactory();
 
-            using (var session = this.SessionFactory.Create(this.Environment))
+            using (var session = this.CreateSession())
             {
                 this.Environment = this.RequestWriter.WriteStart(session, this.Mode, this.secret);
             }
@@ -49,9 +48,9 @@ namespace NSonic.Impl.Connections
 
         public async Task ConnectAsync()
         {
-            this.SessionFactory = this.sessionFactoryProvider.Create(this.hostname, this.port);
+            this.CreateSessionFactory();
 
-            using (var session = this.SessionFactory.Create(this.Environment))
+            using (var session = this.CreateSession())
             {
                 this.Environment = await this.RequestWriter.WriteStartAsync(session, this.Mode, this.secret);
             }
@@ -61,7 +60,7 @@ namespace NSonic.Impl.Connections
         {
             if (this.SessionFactory != null)
             {
-                using (var session = this.SessionFactory.Create(this.Environment))
+                using (var session = this.CreateSession())
                 {
                     try
                     {
@@ -76,6 +75,19 @@ namespace NSonic.Impl.Connections
 
                 this.SessionFactory.Dispose();
             }
+        }
+
+        protected ISonicSession CreateSession()
+        {
+            return this.SessionFactory.Create(this.Environment);
+        }
+
+        private void CreateSessionFactory()
+        {
+            // The reason for this is that the TCP client that is created along with the session
+            // factory will be instantly connected. Otherwise, we would've passed it in the
+            // constructor.
+            this.SessionFactory = this.sessionFactoryProvider.Create(this.hostname, this.port);
         }
     }
 }
