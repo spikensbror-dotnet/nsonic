@@ -63,3 +63,14 @@ using (var control = NSonicFactory.Control(hostname, port, secret))
 	control.Trigger("consolidate");
 }
 ```
+
+## Changelog
+
+### v1.1.0.9
+
+* Fixed locale for ingest push and search queries.
+
+### v1.1.0.5
+
+* First stable release.
+
