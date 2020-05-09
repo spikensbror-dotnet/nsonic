@@ -4,6 +4,7 @@ using NSonic.Impl;
 using NSonic.Impl.Net;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests
 {
@@ -18,6 +19,8 @@ namespace NSonic.Tests
         private StreamReader reader;
 
         private SonicSession session;
+
+        protected virtual bool Async => false;
 
         [TestInitialize]
         public void Initialize()
@@ -37,7 +40,7 @@ namespace NSonic.Tests
         }
 
         [TestMethod]
-        public void ShouldBeAbleToReadFromStream()
+        public async Task Read_ShouldBeAbleToReadFromStream()
         {
             // Arrange
 
@@ -48,17 +51,20 @@ namespace NSonic.Tests
 
             this.stream.Seek(0, SeekOrigin.Begin);
 
-            // Act
+            // Act / Assert
 
-            var result = this.session.Read();
-
-            // Assert
-
-            Assert.AreEqual(expected, result);
+            if (this.Async)
+            {
+                Assert.AreEqual(expected, await this.session.ReadAsync());
+            }
+            else
+            {
+                Assert.AreEqual(expected, this.session.Read());
+            }
         }
 
         [TestMethod]
-        public void ShouldBeAbleToWriteToStream()
+        public async Task Write_ShouldBeAbleToWriteToStream()
         {
             // Arrange
 
@@ -66,19 +72,26 @@ namespace NSonic.Tests
 
             // Act
 
-            this.session.Write(expected);
+            if (this.Async)
+            {
+                await this.session.WriteAsync(expected);
+            }
+            else
+            {
+                this.session.Write(expected);
+            }
+
+            // Assert
 
             this.stream.Seek(0, SeekOrigin.Begin);
             var result = this.reader.ReadLine();
-
-            // Assert
 
             Assert.AreEqual(expected, result);
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void ShouldThrowAssertionExceptionIfAttemptingToWriteTooLongMessage()
+        public async Task Write_ShouldThrowAssertionExceptionIfAttemptingToWriteTooLongMessage()
         {
             // Arrange
 
@@ -86,7 +99,14 @@ namespace NSonic.Tests
 
             // Act
 
-            this.session.Write(expected);
+            if (this.Async)
+            {
+                await this.session.WriteAsync(expected);
+            }
+            else
+            {
+                this.session.Write(expected);
+            }
         }
     }
 }
