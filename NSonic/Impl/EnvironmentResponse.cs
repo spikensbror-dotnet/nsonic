@@ -4,6 +4,8 @@ namespace NSonic.Impl
 {
     struct EnvironmentResponse
     {
+        public static readonly EnvironmentResponse Default = new EnvironmentResponse(1, 20000);
+
         public int Protocol { get; }
         public int Buffer { get; }
         public int MaxBufferStringLength { get; }

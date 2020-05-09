@@ -10,8 +10,15 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Integration test data
+NSonic.Tests/sonic-data
+
+# Unit test tools
+NSonic.Tests/tools
+
 # Code coverage files
 coverage.cobertura.xml
+NSonic.Tests/coverage
 
 # Build results
 [Dd]ebug/

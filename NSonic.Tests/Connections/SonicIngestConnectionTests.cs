@@ -1,15 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using NSonic.Impl;
 using NSonic.Impl.Connections;
+using NSonic.Tests.Stubs;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicIngestConnectionTests : SonicConnectionTestBase
+    public class SonicIngestConnectionTests : TestBase
     {
-        protected override string Mode => "ingest";
-
         private SonicIngestConnection connection;
+
+        protected override string Mode => "ingest";
+        protected override bool Async => false;
 
         [TestInitialize]
         public override void Initialize()
@@ -17,129 +20,180 @@ namespace NSonic.Tests.Connections
             base.Initialize();
 
             this.connection = new SonicIngestConnection(this.SessionFactoryProvider
-                , this.RequestWriter.Object
-                , Hostname
-                , Port
-                , Secret
+                , new SonicRequestWriter()
+                , StubConstants.Hostname
+                , StubConstants.Port
+                , StubConstants.Secret
                 );
-
-            this.SetupSuccessfulConnect(new MockSequence());
         }
 
         [TestMethod]
-        public void ShouldBeAbleToConnect()
-        {
-            this.connection.Connect();
-        }
-
-        [TestMethod]
-        public void CountShouldBeAbleToGetCountOfSpecifiedCollectionBucketAndObject()
+        public async Task Count_ShouldBeAbleToGetCountOfSpecifiedCollectionBucketAndObject()
         {
             // Arrange
 
-            this.SetupWriteResult("32", "COUNT", "collection_name", "bucket_name", "obj_id");
+            this.SetupWriteWithResult("32", "COUNT", "collection_name", "bucket_name", "obj_id");
 
             // Act / Assert
 
-            this.connection.Connect();
-            Assert.AreEqual(32, this.connection.Count("collection_name", "bucket_name", "obj_id"));
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                Assert.AreEqual(32, await this.connection.CountAsync("collection_name", "bucket_name", "obj_id"));
+            }
+            else
+            {
+                this.connection.Connect();
+
+                Assert.AreEqual(32, this.connection.Count("collection_name", "bucket_name", "obj_id"));
+            }
         }
 
         [TestMethod]
-        public void FlushBucketShouldBeAbleToFlushSearchBucket()
+        public async Task FlushBucket_ShouldBeAbleToFlushSearchBucket()
         {
             // Arrange
 
-            this.SetupWriteResult("32", "FLUSHB", "collection_name", "bucket_name");
+            this.SetupWriteWithResult("32", "FLUSHB", "collection_name", "bucket_name");
 
             // Act / Assert
 
-            this.connection.Connect();
-            Assert.AreEqual(32, this.connection.FlushBucket("collection_name", "bucket_name"));
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                Assert.AreEqual(32, await this.connection.FlushBucketAsync("collection_name", "bucket_name"));
+            }
+            else
+            {
+                this.connection.Connect();
+
+                Assert.AreEqual(32, this.connection.FlushBucket("collection_name", "bucket_name"));
+            }
         }
 
         [TestMethod]
-        public void FlushCollectionShouldBeAbleToFlushSearchCollection()
+        public async Task FlushCollection_ShouldBeAbleToFlushSearchCollection()
         {
             // Arrange
 
-            this.SetupWriteResult("32", "FLUSHC", "collection_name");
+            this.SetupWriteWithResult("32", "FLUSHC", "collection_name");
 
             // Act / Assert
 
-            this.connection.Connect();
-            Assert.AreEqual(32, this.connection.FlushCollection("collection_name"));
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                Assert.AreEqual(32, await this.connection.FlushCollectionAsync("collection_name"));
+            }
+            else
+            {
+                this.connection.Connect();
+
+                Assert.AreEqual(32, this.connection.FlushCollection("collection_name"));
+            }
         }
 
         [TestMethod]
-        public void FlushObjectShouldBeAbleToFlushSearchObject()
+        public async Task FlushObject_ShouldBeAbleToFlushSearchObject()
         {
             // Arrange
 
-            this.SetupWriteResult("32", "FLUSHO", "collection_name", "bucket_name", "obj_id");
+            this.SetupWriteWithResult("32", "FLUSHO", "collection_name", "bucket_name", "obj_id");
 
             // Act / Assert
 
-            this.connection.Connect();
-            Assert.AreEqual(32, this.connection.FlushObject("collection_name", "bucket_name", "obj_id"));
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                Assert.AreEqual(32, await this.connection.FlushObjectAsync("collection_name", "bucket_name", "obj_id"));
+            }
+            else
+            {
+                this.connection.Connect();
+
+                Assert.AreEqual(32, this.connection.FlushObject("collection_name", "bucket_name", "obj_id"));
+            }
         }
 
         [TestMethod]
-        public void PopShouldBeAbleToPopSpecificTermFromSpecificObject()
+        public async Task Pop_ShouldBeAbleToPopSpecificTermFromSpecificObject()
         {
             // Arrange
 
-            this.SetupWriteResult("32", "POP", "collection_name", "bucket_name", "obj_id", "\"term\"");
+            this.SetupWriteWithResult("32", "POP", "collection_name", "bucket_name", "obj_id", "\"term\"");
 
             // Act / Assert
 
-            this.connection.Connect();
-            Assert.AreEqual(32, this.connection.Pop("collection_name", "bucket_name", "obj_id", "term"));
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                Assert.AreEqual(32, await this.connection.PopAsync("collection_name", "bucket_name", "obj_id", "term"));
+            }
+            else
+            {
+                this.connection.Connect();
+
+                Assert.AreEqual(32, this.connection.Pop("collection_name", "bucket_name", "obj_id", "term"));
+            }
         }
 
         [TestMethod]
-        public void PushShouldBeAbleToPushWithoutLocale()
+        public async Task Push_ShouldBeAbleToPushWithoutLocale()
         {
             // Arrange
 
-            this.RequestWriter
-                .Setup(rw => rw.WriteOk(this.Session.Object, "PUSH", "collection_name", "bucket_name", "obj_id", "\"term\"", ""))
-                .Verifiable();
+            this.SetupWriteWithOk("PUSH", "collection_name", "bucket_name", "obj_id", "\"term\"", "");
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Push("collection_name", "bucket_name", "obj_id", "term");
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.PushAsync("collection_name", "bucket_name", "obj_id", "term");
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Push("collection_name", "bucket_name", "obj_id", "term");
+            }
 
             // Assert
 
-            this.RequestWriter.Verify();
+            this.VerifyAll();
         }
 
         [TestMethod]
-        public void PushShouldBeAbleToPushWithLocale()
+        public async Task Push_ShouldBeAbleToPushWithLocale()
         {
             // Arrange
 
-            this.RequestWriter
-                .Setup(rw => rw.WriteOk(this.Session.Object, "PUSH", "collection_name", "bucket_name", "obj_id", "\"term\"", "LANG(test)"))
-                .Verifiable();
+            this.SetupWriteWithOk("PUSH", "collection_name", "bucket_name", "obj_id", "\"term\"", "LANG(test)");
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Push("collection_name", "bucket_name", "obj_id", "term", "test");
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.PushAsync("collection_name", "bucket_name", "obj_id", "term", "test");
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Push("collection_name", "bucket_name", "obj_id", "term", "test");
+            }
 
             // Assert
 
-            this.RequestWriter.Verify();
-        }
-
-        private void SetupWriteResult(string response, params string[] args)
-        {
-            this.RequestWriter
-                .Setup(rw => rw.WriteResult(this.Session.Object, args))
-                .Returns(response);
+            this.VerifyAll();
         }
     }
 }

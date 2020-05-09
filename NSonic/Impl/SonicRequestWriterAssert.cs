@@ -18,10 +18,5 @@ namespace NSonic.Impl
         {
             Assert.IsTrue(response.StartsWith("CONNECTED"), "Did not receive connection confirmation from the server");
         }
-
-        public static void Started(string response)
-        {
-            Assert.IsTrue(response.StartsWith("STARTED"), "Failed to start control session");
-        }
     }
 }

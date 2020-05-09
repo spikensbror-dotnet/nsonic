@@ -24,9 +24,6 @@ namespace NSonic.Impl.Connections
             this.hostname = hostname;
             this.port = port;
             this.secret = secret;
-
-            // Default environment.
-            this.Environment = new EnvironmentResponse(1, 20000);
         }
 
         protected abstract string Mode { get; }
@@ -34,7 +31,7 @@ namespace NSonic.Impl.Connections
         protected ISonicRequestWriter RequestWriter { get; }
         protected ISonicSessionFactory SessionFactory { get; private set; }
 
-        public EnvironmentResponse Environment { get; private set; }
+        public EnvironmentResponse Environment { get; private set; } = EnvironmentResponse.Default;
 
         public void Connect()
         {

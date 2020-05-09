@@ -23,21 +23,19 @@ namespace NSonic.Tests
             this.provider = new SonicSessionFactoryProvider();
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            this.listener.Stop();
+        }
+
         [TestMethod]
         public void ShouldCreateSonicSessionFactoryAndSessionsForProvidedEndpoint()
         {
-            var environment = new EnvironmentResponse(1, 20000);
-
             using (var sessionFactory = this.provider.Create("localhost", Port))
             {
                 Assert.IsNotNull(sessionFactory);
                 Assert.IsInstanceOfType(sessionFactory, typeof(SonicSessionFactory));
-
-                using (var session = sessionFactory.Create(environment))
-                {
-                    Assert.IsNotNull(session);
-                    Assert.IsInstanceOfType(session, typeof(SonicSession));
-                }
             }
         }
     }

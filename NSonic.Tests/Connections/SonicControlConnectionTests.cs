@@ -1,15 +1,19 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using NSonic.Impl;
 using NSonic.Impl.Connections;
+using NSonic.Tests.Stubs;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicControlConnectionTests : SonicConnectionTestBase
+    public class SonicControlConnectionTests : TestBase
     {
-        protected override string Mode => "control";
-
         private SonicControlConnection connection;
+
+        protected override string Mode => "control";
+        protected override bool Async => false;
 
         [TestInitialize]
         public override void Initialize()
@@ -17,54 +21,66 @@ namespace NSonic.Tests.Connections
             base.Initialize();
 
             this.connection = new SonicControlConnection(this.SessionFactoryProvider
-                , this.RequestWriter.Object
-                , Hostname
-                , Port
-                , Secret
+                , new SonicRequestWriter()
+                , StubConstants.Hostname
+                , StubConstants.Port
+                , StubConstants.Secret
                 );
-
-            this.SetupSuccessfulConnect(new MockSequence());
         }
 
         [TestMethod]
-        public void ShouldBeAbleToConnect()
-        {
-            this.connection.Connect();
-        }
-
-        [TestMethod]
-        public void InfoShouldReturnServerInfo()
+        public async Task Info_ShouldReturnServerInfo()
         {
             // Arrange
 
-            this.RequestWriter
-                .Setup(rw => rw.WriteResult(this.Session.Object, "INFO"))
-                .Returns("example");
+            var expected = "This is some info";
+
+            this.SetupWriteWithResult(expected, "INFO");
 
             // Act / Assert
 
-            this.connection.Connect();
-            Assert.AreEqual("example", this.connection.Info());
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                Assert.AreEqual(expected, await this.connection.InfoAsync());
+            }
+            else
+            {
+                this.connection.Connect();
+
+                Assert.AreEqual(expected, this.connection.Info());
+            }
         }
 
         [TestMethod]
-        public void TriggerShouldTriggerAnAction()
+        public async Task Trigger_ShouldTriggerServerAction()
         {
             // Arrange
 
-            this.RequestWriter
-                .Setup(rw => rw.WriteOk(this.Session.Object, "TRIGGER", "testing", "test_data"))
-                .Verifiable()
-                ;
+            var action = "testing";
+            var data = "This is some test data";
+
+            this.SetupWriteWithOk("TRIGGER", action, data);
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Trigger("testing", "test_data");
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.TriggerAsync(action, data);
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Trigger(action, data);
+            }
 
             // Assert
 
-            this.RequestWriter.Verify();
+            this.VerifyAll();
         }
     }
 }
