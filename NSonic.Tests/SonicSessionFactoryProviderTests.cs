@@ -23,6 +23,12 @@ namespace NSonic.Tests
             this.provider = new SonicSessionFactoryProvider();
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            this.listener.Stop();
+        }
+
         [TestMethod]
         public void ShouldCreateSonicSessionFactoryAndSessionsForProvidedEndpoint()
         {
