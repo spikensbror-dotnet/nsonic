@@ -2,130 +2,113 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Connections;
+using NSonic.Tests.Stubs;
 using System.Threading.Tasks;
 
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicConnectionTests : SonicConnectionTestBase
+    public class SonicConnectionTests : TestBase
     {
-        private Fixture fixture;
+        private Fixture connection;
 
-        protected override string Mode => "FIXTUREMODE";
+        protected override string Mode => "fixture";
+        protected override bool Async => false;
 
         [TestInitialize]
         public override void Initialize()
         {
             base.Initialize();
 
-            this.fixture = new Fixture(this.SessionFactoryProvider
-                , this.RequestWriter.Object
-                , Hostname
-                , Port
-                , Secret
+            this.connection = new Fixture(this.SessionFactoryProvider
+                , new SonicRequestWriter()
+                , StubConstants.Hostname
+                , StubConstants.Port
+                , StubConstants.Secret
                 );
         }
 
         [TestMethod]
-        public void ShouldBeAbleToConnect()
+        public async Task Connect_ShouldBeAbleToConnect()
         {
-            // Arrange
-
-            this.SetupSuccessfulConnect(new MockSequence());
-
             // Act
 
-            this.fixture.Connect();
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+            }
+            else
+            {
+                this.connection.Connect();
+            }
 
             // Assert
 
-            Assert.AreEqual(1, this.fixture.Environment.Protocol);
-            Assert.AreEqual(20000, this.fixture.Environment.Buffer);
+            Assert.AreEqual(StubConstants.ConnectedEnvironment, this.connection.Environment);
         }
 
         [TestMethod]
-        public async Task ShouldBeAbleToConnectAsync()
-        {
-            // Arrange
-
-            this.SetupSuccessfulConnectAsync(new MockSequence());
-
-            // Act
-
-            await this.fixture.ConnectAsync();
-
-            // Assert
-
-            Assert.AreEqual(1, this.fixture.Environment.Protocol);
-            Assert.AreEqual(20000, this.fixture.Environment.Buffer);
-        }
-
-        [TestMethod]
-        public void ShouldDoNothingOnDisposeIfNotConnected()
+        public void Dispose_ShouldDoNothingIfNotConnected()
         {
             // Act
 
-            this.fixture.Dispose();
+            this.connection.Dispose();
         }
 
         [TestMethod]
-        public void ShouldQuitOnDisposeIfConnected()
+        public async Task Dispose_ShouldQuitIfConnected()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupSuccessfulConnect(sequence);
-
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("QUIT"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("ENDED quit")
+                .SetupWrite(this.Sequence, false, "QUIT")
+                .SetupRead(this.Sequence, false, "ENDED quit")
                 ;
 
             // Act
 
-            this.fixture.Connect();
-            this.fixture.Dispose();
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+            }
+            else
+            {
+                this.connection.Connect();
+            }
+
+            this.connection.Dispose();
 
             // Assert
 
-            this.Session.Verify(s => s.Write("QUIT"), Times.Once);
+            this.VerifyAll();
         }
 
         [TestMethod]
-        public void ShouldFailSilentlyWhenQuittingOnDispose()
+        public async Task ShouldFailSilentlyWhenQuittingOnDispose()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupSuccessfulConnect(sequence);
-
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("QUIT"))
-                ;
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("NOT_ENDED quit")
+                .SetupWrite(this.Sequence, false, "QUIT")
+                .SetupRead(this.Sequence, false, "NOT_ENDED quit")
                 ;
 
             // Act
 
-            this.fixture.Connect();
-            this.fixture.Dispose();
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+            }
+            else
+            {
+                this.connection.Connect();
+            }
+
+            this.connection.Dispose();
 
             // Assert
 
-            this.Session.Verify(s => s.Write("QUIT"), Times.Once);
+            this.VerifyAll();
         }
 
         class Fixture : SonicConnection
@@ -141,7 +124,7 @@ namespace NSonic.Tests.Connections
                 //
             }
 
-            protected override string Mode => "FIXTUREMODE";
+            protected override string Mode => "fixture";
         }
     }
 }

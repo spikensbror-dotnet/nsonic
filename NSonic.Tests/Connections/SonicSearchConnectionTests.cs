@@ -1,11 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using NSonic.Impl;
 using NSonic.Impl.Connections;
+using NSonic.Tests.Stubs;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicSearchConnectionTests : SonicConnectionTestBase
+    public class SonicSearchConnectionTests : TestBase
     {
         private const string Marker = "TSTMRKR";
         private const string Collection = "TSTCOLL";
@@ -13,6 +16,7 @@ namespace NSonic.Tests.Connections
         private const string Terms = "result";
 
         protected override string Mode => "search";
+        protected override bool Async => false;
 
         private SonicSearchConnection connection;
 
@@ -22,297 +26,338 @@ namespace NSonic.Tests.Connections
             base.Initialize();
 
             this.connection = new SonicSearchConnection(this.SessionFactoryProvider
-                , this.RequestWriter.Object
-                , Hostname
-                , Port
-                , Secret
+                , new SonicRequestWriter()
+                , StubConstants.Hostname
+                , StubConstants.Port
+                , StubConstants.Secret
                 );
-
-            this.SetupSuccessfulConnect(new MockSequence());
         }
 
         [TestMethod]
-        public void ShouldBeAbleToConnect()
-        {
-            this.connection.Connect();
-        }
-
-        [TestMethod]
-        public void QueryShouldPerformSearchQueryWithNoOptionals()
+        public async Task Query_ShouldPerformSearchQueryWithNoOptionals()
         {
             // Arrange
 
-            var sequence = new MockSequence();
+            this.SetupNormalQueryWrite();
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("QUERY", Marker);
 
-            this.SetupNormalQueryWrite(sequence);
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "QUERY", Marker);
+            // Act / Assert
 
-            // Act
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
 
-            this.connection.Connect();
-            var results = this.connection.Query(Collection, Bucket, Terms);
+                VerifyResults(await this.connection.QueryAsync(Collection, Bucket, Terms));
+            }
+            else
+            {
+                this.connection.Connect();
 
-            // Assert
-
-            VerifyResults(results);
+                VerifyResults(this.connection.Query(Collection, Bucket, Terms));
+            }
         }
 
         [TestMethod]
-        public void QueryShouldPerformSearchQueryWithOptionals()
+        public async Task Query_ShouldPerformSearchQueryWithOptionals()
         {
             // Arrange
-
-            var sequence = new MockSequence();
 
             var limit = 42;
             var offset = 32;
             var locale = "tst";
 
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("QUERY"
-                        , Collection
-                        , Bucket
-                        , $"\"{Terms}\""
-                        , $"LIMIT({limit})"
-                        , $"OFFSET({offset})"
-                        , $"LANG({locale})"
-                    )
+                .SetupWrite(this.Sequence
+                    , this.Async
+                    , "QUERY"
+                    , Collection
+                    , Bucket
+                    , $"\"{Terms}\""
+                    , $"LIMIT({limit})"
+                    , $"OFFSET({offset})"
+                    , $"LANG({locale})"
                 )
                 ;
 
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "QUERY", Marker);
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("QUERY", Marker);
 
             // Act
 
-            this.connection.Connect();
-            var results = this.connection.Query(Collection, Bucket, Terms, limit, offset, locale);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
 
-            // Assert
+                VerifyResults(await this.connection.QueryAsync(Collection, Bucket, Terms, limit, offset, locale));
+            }
+            else
+            {
+                this.connection.Connect();
 
-            VerifyResults(results);
+                VerifyResults(this.connection.Query(Collection, Bucket, Terms, limit, offset, locale));
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void QueryShouldThrowAssertionExceptionIfPendingResponseIsInvalid()
+        public async Task Query_ShouldThrowAssertionExceptionIfPendingResponseIsInvalid()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupNormalQueryWrite(sequence);
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns($"NOT_PENDING {Marker}")
-                ;
+            this.SetupNormalQueryWrite();
+            this.Session.SetupRead(this.Sequence, this.Async, $"NOT_PENDING {Marker}");
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Query(Collection, Bucket, Terms);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.QueryAsync(Collection, Bucket, Terms);
+            }
+            else
+            {
+                this.connection.Connect();
+
+
+                this.connection.Query(Collection, Bucket, Terms);
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void QueryShouldThrowAssertionExceptionIfEventResponseIsOfInvalidType()
+        public async Task Query_ShouldThrowAssertionExceptionIfEventResponseIsOfInvalidType()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupNormalQueryWrite(sequence);
-
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "INVALID", Marker);
+            this.SetupNormalQueryWrite();
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("INVALID", Marker);
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Query(Collection, Bucket, Terms);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.QueryAsync(Collection, Bucket, Terms);
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Query(Collection, Bucket, Terms);
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void QueryShouldThrowAssertionExceptionIfEventResponseIsForTheWrongMarker()
+        public async Task Query_ShouldThrowAssertionExceptionIfEventResponseIsForTheWrongMarker()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupNormalQueryWrite(sequence);
-
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "QUERY", "INVALID");
+            this.SetupNormalQueryWrite();
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("QUERY", "INVALID");
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Query(Collection, Bucket, Terms);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.QueryAsync(Collection, Bucket, Terms);
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Query(Collection, Bucket, Terms);
+            }
         }
 
         [TestMethod]
-        public void SuggestShouldPerformSuggestionsWithNoOptionals()
+        public async Task Suggest_ShouldPerformSuggestionsWithNoOptionals()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupNormalSuggestWrite(sequence);
-
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "SUGGEST", Marker);
+            this.SetupNormalSuggestWrite();
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("SUGGEST", Marker);
 
             // Act
 
-            this.connection.Connect();
-            var results = this.connection.Suggest(Collection, Bucket, Terms);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
 
-            // Assert
+                VerifyResults(await this.connection.SuggestAsync(Collection, Bucket, Terms));
+            }
+            else
+            {
+                this.connection.Connect();
 
-            VerifyResults(results);
+                VerifyResults(this.connection.Suggest(Collection, Bucket, Terms));
+            }
         }
 
         [TestMethod]
-        public void SuggestShouldPerformSuggestionsWithOptionals()
+        public async Task Suggest_ShouldPerformSuggestionsWithOptionals()
         {
             // Arrange
 
             var limit = 42;
-            var sequence = new MockSequence();
 
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("SUGGEST"
-                        , Collection
-                        , Bucket
-                        , $"\"{Terms}\""
-                        , $"LIMIT({limit})"
-                    )
+                .SetupWrite(this.Sequence
+                    , this.Async
+                    , "SUGGEST"
+                    , Collection
+                    , Bucket
+                    , $"\"{Terms}\""
+                    , $"LIMIT({limit})"
                 )
                 ;
 
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "SUGGEST", Marker);
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("SUGGEST", Marker);
 
             // Act
 
-            this.connection.Connect();
-            var results = this.connection.Suggest(Collection, Bucket, Terms, limit);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
 
-            // Act
+                VerifyResults(await this.connection.SuggestAsync(Collection, Bucket, Terms, limit));
+            }
+            else
+            {
+                this.connection.Connect();
 
-            VerifyResults(results);
+                VerifyResults(this.connection.Suggest(Collection, Bucket, Terms, limit));
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void SuggestShouldThrowAssertionExceptionIfPendingResponseIsInvalid()
+        public async Task Suggest_ShouldThrowAssertionExceptionIfPendingResponseIsInvalid()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupNormalSuggestWrite(sequence);
-
-            this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns($"NOT_PENDING {Marker}")
-                ;
+            this.SetupNormalSuggestWrite();
+            this.Session.SetupRead(this.Sequence, this.Async, $"NOT_PENDING {Marker}");
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Suggest(Collection, Bucket, Terms);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.SuggestAsync(Collection, Bucket, Terms);
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Suggest(Collection, Bucket, Terms);
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void SuggestShouldThrowAssertionExceptionIfEventResponseIsOfInvalidType()
+        public async Task Suggest_ShouldThrowAssertionExceptionIfEventResponseIsOfInvalidType()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupNormalSuggestWrite(sequence);
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "INVALID", Marker);
+            this.SetupNormalSuggestWrite();
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("INVALID", Marker);
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Suggest(Collection, Bucket, Terms);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.SuggestAsync(Collection, Bucket, Terms);
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Suggest(Collection, Bucket, Terms);
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void SuggestShouldThrowAssertoinExceptionIfEventResponseIsForTheWrongMarker()
+        public async Task Suggest_ShouldThrowAssertoinExceptionIfEventResponseIsForTheWrongMarker()
         {
             // Arrange
 
-            var sequence = new MockSequence();
-
-            this.SetupNormalSuggestWrite(sequence);
-            this.SetupPendingMarker(sequence, Marker);
-            this.SetupEventResponse(sequence, "SUGGEST", "INVALID");
+            this.SetupNormalSuggestWrite();
+            this.SetupPendingMarker(Marker);
+            this.SetupEventResponse("SUGGEST", "INVALID");
 
             // Act
 
-            this.connection.Connect();
-            this.connection.Suggest(Collection, Bucket, Terms);
+            if (this.Async)
+            {
+                await this.connection.ConnectAsync();
+
+                await this.connection.SuggestAsync(Collection, Bucket, Terms);
+            }
+            else
+            {
+                this.connection.Connect();
+
+                this.connection.Suggest(Collection, Bucket, Terms);
+            }
         }
 
-        private void SetupNormalQueryWrite(MockSequence sequence)
+        private void SetupNormalQueryWrite()
         {
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("QUERY"
-                        , Collection
-                        , Bucket
-                        , $"\"{Terms}\""
-                        , ""
-                        , ""
-                        , ""
-                    )
+                .SetupWrite(this.Sequence
+                    , this.Async
+                    , "QUERY"
+                    , Collection
+                    , Bucket
+                    , $"\"{Terms}\""
+                    , ""
+                    , ""
+                    , ""
                 )
                 ;
 
         }
 
-        private void SetupNormalSuggestWrite(MockSequence sequence)
+        private void SetupNormalSuggestWrite()
         {
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Write("SUGGEST"
-                        , Collection
-                        , Bucket
-                        , $"\"{Terms}\""
-                        , ""
-                    )
+                .SetupWrite(this.Sequence
+                    , this.Async
+                    , "SUGGEST"
+                    , Collection
+                    , Bucket
+                    , $"\"{Terms}\""
+                    , ""
                 )
                 ;
         }
 
-        private void SetupPendingMarker(MockSequence sequence, string marker)
+        private void SetupPendingMarker(string marker)
         {
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns($"PENDING {marker}")
+                .SetupRead(this.Sequence, this.Async, $"PENDING {marker}")
                 ;
         }
 
-        private void SetupEventResponse(MockSequence sequence, string searchType, string marker)
+        private void SetupEventResponse(string searchType, string marker)
         {
             this.Session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns($"EVENT {searchType} {marker} result1 result2")
+                .SetupRead(this.Sequence, this.Async, $"EVENT {searchType} {marker} result1 result2")
                 ;
         }
 
