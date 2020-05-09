@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
@@ -49,7 +47,7 @@ namespace NSonic.Impl
 
             session.Write("START", mode, secret);
 
-            return this.ParseStartResponse(session.Read());
+            return StartResponseParser.Parse(session.Read());
         }
 
         public async Task<EnvironmentResponse> WriteStartAsync(ISonicSession session, string mode, string secret)
@@ -59,36 +57,7 @@ namespace NSonic.Impl
 
             await session.WriteAsync("START", mode, secret);
 
-            return this.ParseStartResponse(await session.ReadAsync());
-        }
-
-        private EnvironmentResponse ParseStartResponse(string response)
-        {
-            SonicRequestWriterAssert.Started(response);
-
-            var protocol = 0;
-            var buffer = 0;
-
-            response = response.Substring("STARTED ".Length);
-            foreach (var split in response.Split(' '))
-            {
-                var regex = Regex.Match(split, "([a-z_]+)\\(([0-9]*)\\)");
-                if (!regex.Success)
-                {
-                    continue;
-                }
-
-                if (regex.Groups[1].Value == "protocol")
-                {
-                    protocol = Convert.ToInt32(regex.Groups[2].Value);
-                }
-                else if (regex.Groups[1].Value == "buffer")
-                {
-                    buffer = Convert.ToInt32(regex.Groups[2].Value);
-                }
-            }
-
-            return new EnvironmentResponse(protocol, buffer);
+            return StartResponseParser.Parse(await session.ReadAsync());
         }
     }
 }
