@@ -1,7 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
+using NSonic.Tests.Stubs;
 using System;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests
 {
@@ -12,6 +14,8 @@ namespace NSonic.Tests
 
         private SonicRequestWriter writer;
 
+        protected virtual bool Async => false;
+
         [TestInitialize]
         public void Initialize()
         {
@@ -21,26 +25,27 @@ namespace NSonic.Tests
         }
         
         [TestMethod]
-        public void WriteOkShouldWriteAndAssertOkResponse()
+        public async Task WriteOk_ShouldWriteAndAssertOkResponse()
         {
             // Arrange
 
             var sequence = new MockSequence();
 
             this.session
-                .InSequence(sequence)
-                .Setup(s => s.Write("TEST", "HELLO", "WORLD"))
-                ;
-
-            this.session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("OK")
+                .SetupWrite(sequence, this.Async, "TEST", "HELLO", "WORLD")
+                .SetupRead(sequence, this.Async, "OK")
                 ;
 
             // Act
 
-            this.writer.WriteOk(this.session.Object, "TEST", "HELLO", "WORLD");
+            if (this.Async)
+            {
+                await this.writer.WriteOkAsync(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
+            else
+            {
+                this.writer.WriteOk(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
 
             // Assert
 
@@ -49,49 +54,53 @@ namespace NSonic.Tests
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void WriteOkShouldThrowAssertionExceptionIfOkResponseIsNotReceived()
+        public async Task WriteOk_ShouldThrowAssertionExceptionIfOkResponseIsNotReceived()
         {
             // Arrange
 
             var sequence = new MockSequence();
 
             this.session
-                .InSequence(sequence)
-                .Setup(s => s.Write("TEST", "HELLO", "WORLD"))
-                ;
-
-            this.session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("NOT_OK")
+                .SetupWrite(sequence, this.Async, "TEST", "HELLO", "WORLD")
+                .SetupRead(sequence, this.Async, "NOT_OK")
                 ;
 
             // Act
 
-            this.writer.WriteOk(this.session.Object, "TEST", "HELLO", "WORLD");
+            if (this.Async)
+            {
+                await this.writer.WriteOkAsync(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
+            else
+            {
+                this.writer.WriteOk(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
         }
 
         [TestMethod]
-        public void WriteResultShouldWriteAndAssertResultResponse()
+        public async Task WriteResult_ShouldWriteAndAssertResultResponse()
         {
             // Arrange
 
             var sequence = new MockSequence();
 
             this.session
-                .InSequence(sequence)
-                .Setup(s => s.Write("TEST", "HELLO", "WORLD"))
+                .SetupWrite(sequence, this.Async, "TEST", "HELLO", "WORLD")
+                .SetupRead(sequence, this.Async, "RESULT hello sir")
                 ;
 
-            this.session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("RESULT hello sir")
-                ;
+            // Act / Assert
 
-            // Act
+            string result;
 
-            var result = this.writer.WriteResult(this.session.Object, "TEST", "HELLO", "WORLD");
+            if (this.Async)
+            {
+                result = await this.writer.WriteResultAsync(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
+            else
+            {
+                result = this.writer.WriteResult(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
 
             // Assert
 
@@ -102,55 +111,53 @@ namespace NSonic.Tests
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void WriteResultShouldThrowAssertionExceptionIfResultResponseIsNotReceived()
+        public async Task WriteResult_ShouldThrowAssertionExceptionIfResultResponseIsNotReceived()
         {
             // Arrange
 
             var sequence = new MockSequence();
 
             this.session
-                .InSequence(sequence)
-                .Setup(s => s.Write("TEST", "HELLO", "WORLD"))
-                ;
-
-            this.session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("NOT_RESULT testing")
+                .SetupWrite(sequence, this.Async, "TEST", "HELLO", "WORLD")
+                .SetupRead(sequence, this.Async, "NOT_RESULT testing")
                 ;
 
             // Act
 
-            this.writer.WriteResult(this.session.Object, "TEST", "HELLO", "WORLD");
+            if (this.Async)
+            {
+                await this.writer.WriteResultAsync(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
+            else
+            {
+                this.writer.WriteResult(this.session.Object, "TEST", "HELLO", "WORLD");
+            }
         }
 
         [TestMethod]
-        public void WriteStartShouldStartSessionAndReturnEnvironmentResponse()
+        public async Task WriteStart_ShouldStartSessionAndReturnEnvironmentResponse()
         {
             // Arrange
 
             var sequence = new MockSequence();
 
             this.session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns("CONNECTED <sonic-server v1.00>")
-                ;
-
-            this.session
-                .InSequence(sequence)
-                .Setup(s => s.Write("START", "TEST", "HELLO"))
-                ;
-
-            this.session
-                .InSequence(sequence)
-                .Setup(s => s.Read())
-                .Returns($"STARTED TEST protocol(1) buffer(20000)")
+                .SetupRead(sequence, this.Async, "CONNECTED <sonic-server v1.00>")
+                .SetupWrite(sequence, this.Async, "START", "TEST", "HELLO")
+                .SetupRead(sequence, this.Async, $"STARTED TEST protocol(1) buffer(20000)")
                 ;
 
             // Act
 
-            var result = this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+            EnvironmentResponse result;
+            if (this.Async)
+            {
+                result = await this.writer.WriteStartAsync(this.session.Object, "TEST", "HELLO");
+            }
+            else
+            {
+                result = this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+            }
 
             // Assert
 
@@ -162,38 +169,51 @@ namespace NSonic.Tests
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void WriteStartShouldThrowAssertionExceptionIfServerDoesNotStartBySendingConnectionConfirmation()
+        public async Task WriteStart_ShouldThrowAssertionExceptionIfServerDoesNotStartBySendingConnectionConfirmation()
         {
             // Arrange
 
+            var sequence = new MockSequence();
+
             this.session
-                .Setup(s => s.Read())
-                .Returns("NOT_CONNECTED");
+                .SetupRead(sequence, this.Async, "NOT_CONNECTED");
 
             // Act
 
-            this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+            if (this.Async)
+            {
+                await this.writer.WriteStartAsync(this.session.Object, "TEST", "HELLO");
+            }
+            else
+            {
+                this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+            }
         }
 
         [TestMethod]
         [ExpectedException(typeof(AssertionException))]
-        public void WriteStartShouldThrowAssertionExceptionIfStartCommandDoesNotRespondWithConfiguration()
+        public async Task WriteStart_ShouldThrowAssertionExceptionIfStartCommandDoesNotRespondWithConfiguration()
         {
             // Arrange
 
-            this.session
-                .SetupSequence(s => s.Read())
-                .Returns("CONNECTED <sonic-server v1.00>")
-                .Returns("NOT_STARTED")
-                ;
+            var sequence = new MockSequence();
 
             this.session
-                .Setup(s => s.Write("START", "TEST", "HELLO"))
+                .SetupRead(sequence, this.Async, "CONNECTED <sonic-server v1.00>")
+                .SetupWrite(sequence, this.Async, "START", "TEST", "HELLO")
+                .SetupRead(sequence, this.Async, $"NOT_STARTED")
                 ;
 
             // Act
 
-            this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+            if (this.Async)
+            {
+                await this.writer.WriteStartAsync(this.session.Object, "TEST", "HELLO");
+            }
+            else
+            {
+                this.writer.WriteStart(this.session.Object, "TEST", "HELLO");
+            }
         }
     }
 }
