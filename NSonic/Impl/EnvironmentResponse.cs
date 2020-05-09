@@ -16,24 +16,5 @@ namespace NSonic.Impl
             this.Buffer = buffer;
             this.MaxBufferStringLength = (int)Math.Floor((buffer * 0.5) / 4);
         }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is EnvironmentResponse))
-            {
-                return false;
-            }
-
-            var actual = (EnvironmentResponse)obj;
-
-            return this.Protocol == actual.Protocol &&
-                this.Buffer == actual.Buffer;
-        }
-
-        public override int GetHashCode()
-        {
-            return this.Protocol.GetHashCode() ^
-                this.Buffer.GetHashCode();
-        }
     }
 }
