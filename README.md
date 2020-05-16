@@ -71,7 +71,7 @@ using (var control = NSonicFactory.Control(hostname, port, secret))
 
 ## Changelog
 
-### v1.2.1
+### v1.3
 
 * An NSonic connection will now attempt to reconnect to the Sonic server if the connection was lost.
 * Code improvements.
@@ -89,3 +89,7 @@ using (var control = NSonicFactory.Control(hostname, port, secret))
 
 * First stable release.
 
+## Contributing
+
+See the [wiki page](https://dev.azure.com/cyaspik/DotNet/_wiki/wikis/DotNet.wiki/12/Development-process) for information
+about contributing to the project.
