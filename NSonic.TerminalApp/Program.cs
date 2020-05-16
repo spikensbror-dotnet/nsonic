@@ -8,11 +8,11 @@ namespace NSonic.TerminalApp
     {
         static void Main(string[] args)
         {
-            var sessionFactory = new SonicSessionFactory();
-            var requestWriter = new SonicRequestWriter();
-            var connector = new SonicClientConnector(sessionFactory, requestWriter);
+            var sessionFactory = new SessionFactory();
+            var requestWriter = new RequestWriter();
+            var connector = new ClientConnector(sessionFactory, requestWriter);
 
-            using (var tcpClient = new SonicClient(connector, new TcpClientAdapter()))
+            using (var tcpClient = new Client(connector, new TcpClientAdapter()))
             using (var session = sessionFactory.Create(tcpClient))
             {
                 Console.WriteLine(".NET Sonic Terminal");

@@ -9,9 +9,9 @@ namespace NSonic
     /// </summary>
     public static class NSonicFactory
     {
-        private static readonly SonicSessionFactory s_sessionFactory = new SonicSessionFactory();
-        private static readonly SonicRequestWriter s_requestWriter = new SonicRequestWriter();
-        private static readonly SonicClientConnector s_connector = new SonicClientConnector(s_sessionFactory, s_requestWriter);
+        private static readonly SessionFactory s_sessionFactory = new SessionFactory();
+        private static readonly RequestWriter s_requestWriter = new RequestWriter();
+        private static readonly ClientConnector s_connector = new ClientConnector(s_sessionFactory, s_requestWriter);
 
         /// <summary>
         /// Creates a control mode connection.
@@ -25,7 +25,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicControlConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
+            return new ControlConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicIngestConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
+            return new IngestConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
         }
 
         /// <summary>
@@ -55,12 +55,12 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicSearchConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
+            return new SearchConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
         }
 
         private static IDisposableSonicClient CreateTcpClient()
         {
-            return new SonicClient(s_connector, new TcpClientAdapter());
+            return new Client(s_connector, new TcpClientAdapter());
         }
     }
 }

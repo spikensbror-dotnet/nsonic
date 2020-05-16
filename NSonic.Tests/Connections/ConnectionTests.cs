@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicConnectionTests : TestBase
+    public class ConnectionTests : TestBase
     {
         private Fixture connection;
 
@@ -113,10 +113,10 @@ namespace NSonic.Tests.Connections
             this.VerifyAll();
         }
 
-        class Fixture : SonicConnection
+        class Fixture : Connection
         {
-            public Fixture(ISonicSessionFactory sessionFactory
-                , ISonicRequestWriter requestWriter
+            public Fixture(ISessionFactory sessionFactory
+                , IRequestWriter requestWriter
                 , IDisposableSonicClient tcpClient
                 , string hostname
                 , int port

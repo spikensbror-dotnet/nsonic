@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicControlConnectionTests : TestBase
+    public class ControlConnectionTests : TestBase
     {
-        private SonicControlConnection connection;
+        private ControlConnection connection;
 
         internal override ConnectionMode Mode => ConnectionMode.Control;
         protected override bool Async => false;
@@ -20,8 +20,8 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.connection = new SonicControlConnection(this.SessionFactory
-                , new SonicRequestWriter()
+            this.connection = new ControlConnection(this.SessionFactory
+                , new RequestWriter()
                 , this.Client
                 , StubConstants.Hostname
                 , StubConstants.Port

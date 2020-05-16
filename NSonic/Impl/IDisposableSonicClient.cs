@@ -2,7 +2,7 @@
 
 namespace NSonic.Impl
 {
-    interface IDisposableSonicClient : ISonicClient, IDisposable
+    interface IDisposableSonicClient : IClient, IDisposable
     {
         //
     }

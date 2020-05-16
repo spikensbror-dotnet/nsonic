@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
-    interface ISonicClient
+    interface IClient
     {
         EnvironmentResponse Environment { get; }
         SemaphoreSlim Semaphore { get; }

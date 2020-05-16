@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
-    class SonicClient : IDisposableSonicClient
+    class Client : IDisposableSonicClient
     {
-        private readonly ISonicClientConnector connector;
+        private readonly IClientConnector connector;
         private readonly ITcpClient tcpClient;
 
         private Configuration configuration;
 
-        public SonicClient(ISonicClientConnector connector
+        public Client(IClientConnector connector
             , ITcpClient tcpClient
             )
         {

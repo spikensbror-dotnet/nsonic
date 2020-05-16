@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicIngestConnectionTests : TestBase
+    public class IngestConnectionTests : TestBase
     {
-        private SonicIngestConnection connection;
+        private IngestConnection connection;
 
         internal override ConnectionMode Mode => ConnectionMode.Ingest;
         protected override bool Async => false;
@@ -19,8 +19,8 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.connection = new SonicIngestConnection(this.SessionFactory
-                , new SonicRequestWriter()
+            this.connection = new IngestConnection(this.SessionFactory
+                , new RequestWriter()
                 , this.Client
                 , StubConstants.Hostname
                 , StubConstants.Port

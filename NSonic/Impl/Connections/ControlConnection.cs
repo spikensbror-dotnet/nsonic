@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
-    sealed class SonicControlConnection : SonicConnection, ISonicControlConnection
+    sealed class ControlConnection : Connection, ISonicControlConnection
     {
-        public SonicControlConnection(ISonicSessionFactory sessionFactory
-            , ISonicRequestWriter requestWriter
+        public ControlConnection(ISessionFactory sessionFactory
+            , IRequestWriter requestWriter
             , IDisposableSonicClient client
             , string hostname
             , int port

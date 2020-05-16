@@ -13,24 +13,24 @@ namespace NSonic.Tests
     /// to cover the cases not covered elsewhere.
     /// </summary>
     [TestClass]
-    public class SonicTcpClientTests
+    public class ClientTests
     {
-        private Mock<ISonicClientConnector> connector;
+        private Mock<IClientConnector> connector;
         private Mock<ITcpClient> tcpClient;
 
         private Configuration configuration;
 
-        private SonicClient client;
+        private Client client;
 
         [TestInitialize]
         public void Initialize()
         {
-            this.connector = new Mock<ISonicClientConnector>();
+            this.connector = new Mock<IClientConnector>();
             this.tcpClient = new Mock<ITcpClient>(MockBehavior.Strict);
 
             this.configuration = new Configuration(StubConstants.Hostname, StubConstants.Port, StubConstants.Secret, ConnectionMode.Control);
 
-            this.client = new SonicClient(this.connector.Object, this.tcpClient.Object);
+            this.client = new Client(this.connector.Object, this.tcpClient.Object);
             this.client.Configure(this.configuration);
         }
 

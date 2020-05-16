@@ -7,15 +7,15 @@ using System.Threading;
 namespace NSonic.Tests
 {
     [TestClass]
-    public class SonicSessionFactoryTests
+    public class SessionFactoryTests
     {
         [TestMethod]
         public void ShouldBeAbleToCreateSession()
         {
             // Arrange
 
-            var factory = new SonicSessionFactory();
-            var tcpClient = Mock.Of<ISonicClient>(stc => stc.Semaphore == new SemaphoreSlim(1, 1));
+            var factory = new SessionFactory();
+            var tcpClient = Mock.Of<IClient>(stc => stc.Semaphore == new SemaphoreSlim(1, 1));
             var environment = new EnvironmentResponse(1, 42);
 
             // Act
@@ -24,7 +24,7 @@ namespace NSonic.Tests
 
             // Assert
 
-            Assert.AreSame(tcpClient, ((SonicSession)result).Client);
+            Assert.AreSame(tcpClient, ((Session)result).Client);
         }
     }
 }

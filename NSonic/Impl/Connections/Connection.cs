@@ -2,16 +2,16 @@
 
 namespace NSonic.Impl.Connections
 {
-    abstract class SonicConnection : ISonicConnection
+    abstract class Connection : ISonicConnection
     {
-        private readonly ISonicSessionFactory sessionFactory;
+        private readonly ISessionFactory sessionFactory;
         internal readonly IDisposableSonicClient client;
         private readonly string hostname;
         private readonly int port;
         private readonly string secret;
 
-        protected SonicConnection(ISonicSessionFactory sessionFactory
-            , ISonicRequestWriter requestWriter
+        protected Connection(ISessionFactory sessionFactory
+            , IRequestWriter requestWriter
             , IDisposableSonicClient client
             , string hostname
             , int port
@@ -28,7 +28,7 @@ namespace NSonic.Impl.Connections
 
         protected abstract ConnectionMode Mode { get; }
 
-        protected ISonicRequestWriter RequestWriter { get; }
+        protected IRequestWriter RequestWriter { get; }
 
         public void Connect()
         {
@@ -49,7 +49,7 @@ namespace NSonic.Impl.Connections
             this.client.Dispose();
         }
 
-        protected ISonicSession CreateSession()
+        protected ISession CreateSession()
         {
             return this.sessionFactory.Create(this.client);
         }

@@ -7,12 +7,12 @@ namespace NSonic.Tests.Connections
 {
     public abstract class TestBase
     {
-        internal ISonicRequestWriter RequestWriter { get; private set; }
+        internal IRequestWriter RequestWriter { get; private set; }
         internal MockSequence Sequence { get; private set; }
         internal StubSessionFactory SessionFactory { get; private set; }
         internal IDisposableSonicClient Client { get; private set; }
 
-        internal Mock<ISonicSession> Session => this.SessionFactory.PostConnectSession;
+        internal Mock<ISession> Session => this.SessionFactory.PostConnectSession;
 
         internal abstract ConnectionMode Mode { get; }
         protected abstract bool Async { get; }
@@ -20,12 +20,12 @@ namespace NSonic.Tests.Connections
         [TestInitialize]
         public virtual void Initialize()
         {
-            this.RequestWriter = new SonicRequestWriter();
+            this.RequestWriter = new RequestWriter();
             this.Sequence = new MockSequence();
             this.SessionFactory = new StubSessionFactory(this.Sequence, this.Mode, this.Async);
 
-            var connector = new SonicClientConnector(this.SessionFactory, this.RequestWriter);
-            this.Client = new SonicClient(connector, this.SessionFactory.TcpClient.Object);
+            var connector = new ClientConnector(this.SessionFactory, this.RequestWriter);
+            this.Client = new Client(connector, this.SessionFactory.TcpClient.Object);
         }
 
         protected void SetupWriteWithOk(params string[] args)

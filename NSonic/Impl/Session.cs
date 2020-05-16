@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
-    class SonicSession : ISonicSession
+    class Session : ISession
     {
-        public SonicSession(ISonicClient client)
+        public Session(IClient client)
         {
             // As long as the session is alive, it should carry an exclusive lock of the TCP client
             // to prevent operations across threads.
@@ -18,7 +18,7 @@ namespace NSonic.Impl
             this.Client = client;
         }
 
-        public ISonicClient Client { get; }
+        public IClient Client { get; }
 
         public void Dispose()
         {

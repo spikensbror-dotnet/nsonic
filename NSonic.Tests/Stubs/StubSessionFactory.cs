@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NSonic.Tests.Stubs
 {
-    class StubSessionFactory : ISonicSessionFactory
+    class StubSessionFactory : ISessionFactory
     {
         public StubSessionFactory(MockSequence sequence, ConnectionMode mode, bool async)
         {
@@ -40,7 +40,7 @@ namespace NSonic.Tests.Stubs
 
             this.TcpClient.Setup(tc => tc.Dispose());
 
-            this.PreConnectSession = new Mock<ISonicSession>(MockBehavior.Strict);
+            this.PreConnectSession = new Mock<ISession>(MockBehavior.Strict);
             this.PreConnectSession.Setup(pcs => pcs.Dispose());
 
             this.PreConnectSession
@@ -49,16 +49,16 @@ namespace NSonic.Tests.Stubs
                 .SetupRead(sequence, async, "STARTED control protocol(1) buffer(20002)")
                 ;
 
-            this.PostConnectSession = new Mock<ISonicSession>(MockBehavior.Strict);
+            this.PostConnectSession = new Mock<ISession>(MockBehavior.Strict);
             this.PostConnectSession.Setup(pcs => pcs.Dispose());
         }
 
         public SemaphoreSlim Semaphore { get; }
         public Mock<ITcpClient> TcpClient { get; }
-        public Mock<ISonicSession> PreConnectSession { get; }
-        public Mock<ISonicSession> PostConnectSession { get; }
+        public Mock<ISession> PreConnectSession { get; }
+        public Mock<ISession> PostConnectSession { get; }
 
-        public ISonicSession Create(ISonicClient tcpClient)
+        public ISession Create(IClient tcpClient)
         {
             if (tcpClient.Environment.Equals(EnvironmentResponse.Default))
             {

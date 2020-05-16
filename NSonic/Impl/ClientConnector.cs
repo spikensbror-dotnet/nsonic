@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
-    class SonicClientConnector : ISonicClientConnector
+    class ClientConnector : IClientConnector
     {
-        private readonly ISonicSessionFactory sessionFactory;
-        private readonly ISonicStartRequestWriter startRequestWriter;
+        private readonly ISessionFactory sessionFactory;
+        private readonly IStartRequestWriter startRequestWriter;
 
-        public SonicClientConnector(ISonicSessionFactory sessionFactory
-            , ISonicStartRequestWriter startRequestWriter
+        public ClientConnector(ISessionFactory sessionFactory
+            , IStartRequestWriter startRequestWriter
             )
         {
             this.sessionFactory = sessionFactory;
             this.startRequestWriter = startRequestWriter;
         }
 
-        public EnvironmentResponse Connect(ISonicClient client, ITcpClient tcpClient, Configuration configuration)
+        public EnvironmentResponse Connect(IClient client, ITcpClient tcpClient, Configuration configuration)
         {
             tcpClient.Connect(configuration.Hostname, configuration.Port);
 
@@ -29,7 +29,7 @@ namespace NSonic.Impl
             }
         }
 
-        public async Task<EnvironmentResponse> ConnectAsync(ISonicClient client, ITcpClient tcpClient, Configuration configuration)
+        public async Task<EnvironmentResponse> ConnectAsync(IClient client, ITcpClient tcpClient, Configuration configuration)
         {
             await tcpClient.ConnectAsync(configuration.Hostname, configuration.Port);
 
@@ -39,7 +39,7 @@ namespace NSonic.Impl
             }
         }
 
-        public void Disconnect(ISonicClient client)
+        public void Disconnect(IClient client)
         {
             using (var session = this.sessionFactory.Create(client))
             {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicControlConnectionAsyncTests : SonicControlConnectionTests
+    public class ControlConnectionAsyncTests : ControlConnectionTests
     {
         protected override bool Async => true;
     }

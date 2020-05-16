@@ -3,7 +3,7 @@
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicConnectionAsyncTests : SonicConnectionTests
+    public class SearchConnectionAsyncTests : SearchConnectionTests
     {
         protected override bool Async => true;
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicSearchConnectionTests : TestBase
+    public class SearchConnectionTests : TestBase
     {
         private const string Marker = "TSTMRKR";
         private const string Collection = "TSTCOLL";
@@ -17,15 +17,15 @@ namespace NSonic.Tests.Connections
         internal override ConnectionMode Mode => ConnectionMode.Search;
         protected override bool Async => false;
 
-        private SonicSearchConnection connection;
+        private SearchConnection connection;
 
         [TestInitialize]
         public override void Initialize()
         {
             base.Initialize();
 
-            this.connection = new SonicSearchConnection(this.SessionFactory
-                , new SonicRequestWriter()
+            this.connection = new SearchConnection(this.SessionFactory
+                , new RequestWriter()
                 , this.Client
                 , StubConstants.Hostname
                 , StubConstants.Port
