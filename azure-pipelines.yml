@@ -1,5 +1,5 @@
 pool: Hosted Windows 2019 with VS2019
-name: 1.2.0$(Rev:-r)
+name: 1.2.1$(Rev:-r)
 variables:
   projectName: 'NSonic'
 

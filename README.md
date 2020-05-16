@@ -71,6 +71,10 @@ using (var control = NSonicFactory.Control(hostname, port, secret))
 
 ## Changelog
 
+### v1.2.1
+
+* Code improvements.
+
 ### v1.2
 
 * Implemented asynchronous equivalents to most functionality.
