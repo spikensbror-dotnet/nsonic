@@ -9,65 +9,7 @@ NSonic is an open-source .NET client implementation for the [Sonic](https://gith
 
 ## Usage
 
-### Async
-
-Most methods have asynchronous equivalents starting at version `1.2.x`. Simply append the method name
-with `Async`, i.e. `control.ConnectAsync`, `search.QueryAsync`, etc.
-
-### Search mode
-
-```C#
-using (var search = NSonicFactory.Search(hostname, port, secret))
-{
-	search.Connect();
-
-	var queryResults = search.Query("messages", "user:1", "s");
-	Console.WriteLine($"QUERY: {string.Join(", ", queryResults)}");
-
-	var suggestResults = search.Suggest("messages", "user:1", "s");
-	Console.WriteLine($"SUGGEST: {string.Join(", ", suggestResults)}");
-}
-```
-
-### Ingest mode
-
-```C#
-using (var ingest = NSonicFactory.Ingest(hostname, port, secret))
-{
-	ingest.Connect();
-
-	ingest.Push("messages", "user:1", "conversation:1", "This is an example push.", locale: null);
-
-	var popResult = ingest.Pop("messages", "user:1", "conversation:1", "This is an example push.");
-	Console.WriteLine($"POP: {popResult}");
-
-	var countResult = ingest.Count("messages", "user:1");
-	Console.WriteLine($"COUNT: {countResult}");
-
-	var flushCollectionResult = ingest.FlushCollection("messages");
-	Console.WriteLine($"FLUSHC: {flushCollectionResult}");
-
-	var flushBucketResult = ingest.FlushBucket("messages", "user:1");
-	Console.WriteLine($"FLUSHB: {flushBucketResult}");
-
-	var flushObjectResult = ingest.FlushObject("messages", "user:1", "conversation:1");
-	Console.WriteLine($"FLUSHO: {flushObjectResult}");
-}
-```
-
-### Control mode
-
-```C#
-using (var control = NSonicFactory.Control(hostname, port, secret))
-{
-	control.Connect();
-
-	var info = control.Info();
-	Console.WriteLine($"INFO: {info}");
-
-	control.Trigger("consolidate");
-}
-```
+Go and read the [documentation](https://dev.azure.com/cyaspik/DotNet/_wiki/wikis/DotNet.wiki/14/Documentation).
 
 ## Changelog
 
