@@ -9,11 +9,9 @@ namespace NSonic.Impl.Connections
         public SearchConnection(ISessionFactory sessionFactory
             , IRequestWriter requestWriter
             , IDisposableSonicClient client
-            , string hostname
-            , int port
-            , string secret
+            , Configuration configuration
             )
-            : base(sessionFactory, requestWriter, client, hostname, port, secret)
+            : base(sessionFactory, requestWriter, client, configuration)
         {
             //
         }

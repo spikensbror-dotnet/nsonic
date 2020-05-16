@@ -24,9 +24,7 @@ namespace NSonic.Tests.Connections
             this.connection = new Fixture(this.SessionFactory
                 , this.RequestWriter
                 , this.Client
-                , StubConstants.Hostname
-                , StubConstants.Port
-                , StubConstants.Secret
+                , StubConstants.Configuration
                 );
         }
 
@@ -118,11 +116,9 @@ namespace NSonic.Tests.Connections
             public Fixture(ISessionFactory sessionFactory
                 , IRequestWriter requestWriter
                 , IDisposableSonicClient tcpClient
-                , string hostname
-                , int port
-                , string secret
+                , Configuration configuration
                 )
-                : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
+                : base(sessionFactory, requestWriter, tcpClient, configuration)
             {
                 //
             }

@@ -22,9 +22,7 @@ namespace NSonic.Tests.Connections
             this.connection = new IngestConnection(this.SessionFactory
                 , new RequestWriter()
                 , this.Client
-                , StubConstants.Hostname
-                , StubConstants.Port
-                , StubConstants.Secret
+                , StubConstants.Configuration
                 );
         }
 

@@ -12,13 +12,18 @@ namespace NSonic.Impl
         public Configuration(string hostname
             , int port
             , string secret
-            , ConnectionMode mode
+            , ConnectionMode mode = ConnectionMode.None
             )
         {
             this.Hostname = hostname;
             this.Port = port;
             this.Secret = secret;
             this.Mode = mode;
+        }
+
+        public Configuration WithMode(ConnectionMode mode)
+        {
+            return new Configuration(this.Hostname, this.Port, this.Secret, mode);
         }
     }
 }

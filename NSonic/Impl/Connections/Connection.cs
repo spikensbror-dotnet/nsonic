@@ -6,24 +6,18 @@ namespace NSonic.Impl.Connections
     {
         private readonly ISessionFactory sessionFactory;
         internal readonly IDisposableSonicClient client;
-        private readonly string hostname;
-        private readonly int port;
-        private readonly string secret;
+        private readonly Configuration configuration;
 
         protected Connection(ISessionFactory sessionFactory
             , IRequestWriter requestWriter
             , IDisposableSonicClient client
-            , string hostname
-            , int port
-            , string secret
+            , Configuration configuration
             )
         {
             this.sessionFactory = sessionFactory;
             this.RequestWriter = requestWriter;
             this.client = client;
-            this.hostname = hostname;
-            this.port = port;
-            this.secret = secret;
+            this.configuration = configuration;
         }
 
         protected abstract ConnectionMode Mode { get; }
@@ -32,14 +26,14 @@ namespace NSonic.Impl.Connections
 
         public void Connect()
         {
-            this.client.Configure(new Configuration(this.hostname, this.port, this.secret, this.Mode));
+            this.client.Configure(this.configuration.WithMode(this.Mode));
 
             this.client.Connect();
         }
 
         public async Task ConnectAsync()
         {
-            this.client.Configure(new Configuration(this.hostname, this.port, this.secret, this.Mode));
+            this.client.Configure(this.configuration.WithMode(this.Mode));
 
             await this.client.ConnectAsync();
         }

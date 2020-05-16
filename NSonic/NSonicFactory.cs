@@ -25,7 +25,9 @@ namespace NSonic
             , string secret
             )
         {
-            return new ControlConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
+            var configuration = new Configuration(hostname, port, secret);
+
+            return new ControlConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), configuration);
         }
 
         /// <summary>
@@ -40,7 +42,9 @@ namespace NSonic
             , string secret
             )
         {
-            return new IngestConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
+            var configuration = new Configuration(hostname, port, secret);
+
+            return new IngestConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), configuration);
         }
 
         /// <summary>
@@ -55,7 +59,9 @@ namespace NSonic
             , string secret
             )
         {
-            return new SearchConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
+            var configuration = new Configuration(hostname, port, secret);
+
+            return new SearchConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), configuration);
         }
 
         private static IDisposableSonicClient CreateTcpClient()

@@ -23,9 +23,7 @@ namespace NSonic.Tests.Connections
             this.connection = new ControlConnection(this.SessionFactory
                 , new RequestWriter()
                 , this.Client
-                , StubConstants.Hostname
-                , StubConstants.Port
-                , StubConstants.Secret
+                , StubConstants.Configuration
                 );
         }
 
