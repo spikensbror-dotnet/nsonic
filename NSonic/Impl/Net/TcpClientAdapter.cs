@@ -11,7 +11,7 @@ namespace NSonic.Impl.Net
 
         public bool Connected => this.client?.Connected ?? false;
 
-        public SemaphoreSlim Semaphore { get; private set; }
+        public SemaphoreSlim Semaphore { get; private set; } = new SemaphoreSlim(1, 1);
 
         public virtual void Connect(string hostname, int port)
         {

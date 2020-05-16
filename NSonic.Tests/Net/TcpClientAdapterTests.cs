@@ -31,11 +31,13 @@ namespace NSonic.Tests.Net
         public void ShouldBeAbleToConnectAndReconnectSynchronously()
         {
             using var client = new TcpClientAdapter();
+            var semaphore = client.Semaphore;
 
             Assert.IsFalse(client.Connected);
 
             client.Connect("localhost", Port);
 
+            Assert.AreNotSame(semaphore, client.Semaphore);
             Assert.IsTrue(client.Connected);
 
             client.Connect("localhost", Port);
@@ -47,12 +49,14 @@ namespace NSonic.Tests.Net
         public async Task ShouldBeAbleToConnectAndReconnectAsynchronously()
         {
             using var client = new TcpClientAdapter();
+            var semaphore = client.Semaphore;
 
             Assert.IsFalse(client.Connected);
 
             await client.ConnectAsync("localhost", Port);
 
             Assert.IsTrue(client.Connected);
+            Assert.AreNotSame(semaphore, client.Semaphore);
 
             await client.ConnectAsync("localhost", Port);
 
