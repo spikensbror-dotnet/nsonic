@@ -9,6 +9,10 @@ namespace NSonic
     /// </summary>
     public static class NSonicFactory
     {
+        private static readonly SonicSessionFactory s_sessionFactory = new SonicSessionFactory();
+        private static readonly SonicRequestWriter s_requestWriter = new SonicRequestWriter();
+        private static readonly SonicClientConnector s_connector = new SonicClientConnector(s_sessionFactory, s_requestWriter);
+
         /// <summary>
         /// Creates a control mode connection.
         /// </summary>
@@ -21,7 +25,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicControlConnection(new SonicSessionFactory(), new SonicRequestWriter(), new TcpClientAdapter(), hostname, port, secret);
+            return new SonicControlConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
         }
 
         /// <summary>
@@ -36,7 +40,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicIngestConnection(new SonicSessionFactory(), new SonicRequestWriter(), new TcpClientAdapter(), hostname, port, secret);
+            return new SonicIngestConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
         }
 
         /// <summary>
@@ -51,7 +55,12 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicSearchConnection(new SonicSessionFactory(), new SonicRequestWriter(), new TcpClientAdapter(), hostname, port, secret);
+            return new SonicSearchConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), hostname, port, secret);
+        }
+
+        private static IDisposableSonicClient CreateTcpClient()
+        {
+            return new SonicClient(s_connector, new TcpClientAdapter());
         }
     }
 }

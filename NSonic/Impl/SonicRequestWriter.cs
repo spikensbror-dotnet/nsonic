@@ -40,22 +40,22 @@ namespace NSonic.Impl
             return response.Substring("RESULT ".Length);
         }
 
-        public EnvironmentResponse WriteStart(ISonicSession session, string mode, string secret)
+        public EnvironmentResponse WriteStart(ISonicSession session, ConnectionMode mode, string secret)
         {
             var response = session.Read();
             SonicRequestWriterAssert.Connected(response);
 
-            session.Write("START", mode, secret);
+            session.Write("START", mode.ToString().ToLowerInvariant(), secret);
 
             return StartResponseParser.Parse(session.Read());
         }
 
-        public async Task<EnvironmentResponse> WriteStartAsync(ISonicSession session, string mode, string secret)
+        public async Task<EnvironmentResponse> WriteStartAsync(ISonicSession session, ConnectionMode mode, string secret)
         {
             var response = await session.ReadAsync();
             SonicRequestWriterAssert.Connected(response);
 
-            await session.WriteAsync("START", mode, secret);
+            await session.WriteAsync("START", mode.ToString().ToLowerInvariant(), secret);
 
             return StartResponseParser.Parse(await session.ReadAsync());
         }

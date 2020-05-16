@@ -8,17 +8,17 @@ namespace NSonic.Impl.Connections
     {
         public SonicControlConnection(ISonicSessionFactory sessionFactory
             , ISonicRequestWriter requestWriter
-            , IDisposableTcpClient tcpClient
+            , IDisposableSonicClient client
             , string hostname
             , int port
             , string secret
             )
-            : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
+            : base(sessionFactory, requestWriter, client, hostname, port, secret)
         {
             //
         }
 
-        protected override string Mode => "control";
+        protected override ConnectionMode Mode => ConnectionMode.Control;
 
         public string Info()
         {

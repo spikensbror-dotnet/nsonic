@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Connections;
 using NSonic.Tests.Stubs;
@@ -15,7 +14,7 @@ namespace NSonic.Tests.Connections
         private const string Bucket = "TSTBCKT";
         private const string Terms = "result";
 
-        protected override string Mode => "search";
+        internal override ConnectionMode Mode => ConnectionMode.Search;
         protected override bool Async => false;
 
         private SonicSearchConnection connection;
@@ -27,7 +26,7 @@ namespace NSonic.Tests.Connections
 
             this.connection = new SonicSearchConnection(this.SessionFactory
                 , new SonicRequestWriter()
-                , this.TcpClient
+                , this.Client
                 , StubConstants.Hostname
                 , StubConstants.Port
                 , StubConstants.Secret

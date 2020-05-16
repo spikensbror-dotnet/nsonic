@@ -12,7 +12,7 @@ namespace NSonic.Tests.Connections
     {
         private SonicControlConnection connection;
 
-        protected override string Mode => "control";
+        internal override ConnectionMode Mode => ConnectionMode.Control;
         protected override bool Async => false;
 
         [TestInitialize]
@@ -22,7 +22,7 @@ namespace NSonic.Tests.Connections
 
             this.connection = new SonicControlConnection(this.SessionFactory
                 , new SonicRequestWriter()
-                , this.TcpClient
+                , this.Client
                 , StubConstants.Hostname
                 , StubConstants.Port
                 , StubConstants.Secret

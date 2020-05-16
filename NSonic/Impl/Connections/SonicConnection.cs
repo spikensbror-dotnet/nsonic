@@ -1,24 +1,18 @@
-﻿using NSonic.Impl.Net;
-using NSonic.Utils;
-using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
     abstract class SonicConnection : ISonicConnection
     {
         private readonly ISonicSessionFactory sessionFactory;
-        private readonly IDisposableTcpClient tcpClient;
+        internal readonly IDisposableSonicClient client;
         private readonly string hostname;
         private readonly int port;
         private readonly string secret;
 
-        internal EnvironmentResponse environment = EnvironmentResponse.Default;
-
         protected SonicConnection(ISonicSessionFactory sessionFactory
             , ISonicRequestWriter requestWriter
-            , IDisposableTcpClient tcpClient
+            , IDisposableSonicClient client
             , string hostname
             , int port
             , string secret
@@ -26,60 +20,38 @@ namespace NSonic.Impl.Connections
         {
             this.sessionFactory = sessionFactory;
             this.RequestWriter = requestWriter;
-            this.tcpClient = tcpClient;
+            this.client = client;
             this.hostname = hostname;
             this.port = port;
             this.secret = secret;
         }
 
-        protected abstract string Mode { get; }
+        protected abstract ConnectionMode Mode { get; }
 
         protected ISonicRequestWriter RequestWriter { get; }
 
         public void Connect()
         {
-            this.tcpClient.Connect(this.hostname, this.port);
+            this.client.Configure(new Configuration(this.hostname, this.port, this.secret, this.Mode));
 
-            using (var session = this.CreateSession())
-            {
-                this.environment = this.RequestWriter.WriteStart(session, this.Mode, this.secret);
-            }
+            this.client.Connect();
         }
 
         public async Task ConnectAsync()
         {
-            await this.tcpClient.ConnectAsync(this.hostname, this.port);
+            this.client.Configure(new Configuration(this.hostname, this.port, this.secret, this.Mode));
 
-            using (var session = this.CreateSession())
-            {
-                this.environment = await this.RequestWriter.WriteStartAsync(session, this.Mode, this.secret);
-            }
+            await this.client.ConnectAsync();
         }
 
         public void Dispose()
         {
-            if (this.tcpClient.Connected)
-            {
-                using (var session = this.CreateSession())
-                {
-                    try
-                    {
-                        session.Write("QUIT");
-                        Assert.IsTrue(session.Read().StartsWith("ENDED"), "Quit failed when disposing sonic connection");
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.ToString());
-                    }
-                }
-            }
-
-            this.tcpClient.Dispose();
+            this.client.Dispose();
         }
 
         protected ISonicSession CreateSession()
         {
-            return this.sessionFactory.Create(this.tcpClient, this.environment);
+            return this.sessionFactory.Create(this.client);
         }
     }
 }

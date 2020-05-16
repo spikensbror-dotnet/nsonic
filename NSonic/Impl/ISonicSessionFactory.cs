@@ -4,6 +4,6 @@ namespace NSonic.Impl
 {
     interface ISonicSessionFactory
     {
-        ISonicSession Create(ITcpClient tcpClient, EnvironmentResponse environment);
+        ISonicSession Create(ISonicClient client);
     }
 }

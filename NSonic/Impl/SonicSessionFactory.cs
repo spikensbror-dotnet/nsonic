@@ -4,9 +4,9 @@ namespace NSonic.Impl
 {
     class SonicSessionFactory : ISonicSessionFactory
     {
-        public ISonicSession Create(ITcpClient tcpClient, EnvironmentResponse environment)
+        public ISonicSession Create(ISonicClient tcpClient)
         {
-            return new SonicSession(tcpClient, environment);
+            return new SonicSession(tcpClient);
         }
     }
 }

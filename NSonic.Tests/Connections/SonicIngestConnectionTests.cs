@@ -11,7 +11,7 @@ namespace NSonic.Tests.Connections
     {
         private SonicIngestConnection connection;
 
-        protected override string Mode => "ingest";
+        internal override ConnectionMode Mode => ConnectionMode.Ingest;
         protected override bool Async => false;
 
         [TestInitialize]
@@ -21,7 +21,7 @@ namespace NSonic.Tests.Connections
 
             this.connection = new SonicIngestConnection(this.SessionFactory
                 , new SonicRequestWriter()
-                , this.TcpClient
+                , this.Client
                 , StubConstants.Hostname
                 , StubConstants.Port
                 , StubConstants.Secret

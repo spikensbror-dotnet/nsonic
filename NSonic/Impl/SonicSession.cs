@@ -3,25 +3,22 @@ using NSonic.Utils;
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
     class SonicSession : ISonicSession
     {
-        public SonicSession(ITcpClient client, EnvironmentResponse environment)
+        public SonicSession(ISonicClient client)
         {
             // As long as the session is alive, it should carry an exclusive lock of the TCP client
             // to prevent operations across threads.
             client.Semaphore.Wait();
 
             this.Client = client;
-            this.Environment = environment;
         }
 
-        public ITcpClient Client { get; }
-        public EnvironmentResponse Environment { get; }
+        public ISonicClient Client { get; }
 
         public void Dispose()
         {
@@ -38,7 +35,7 @@ namespace NSonic.Impl
 
         public async Task<string> ReadAsync()
         {
-            return await new StreamReader(this.Client.GetStream()).ReadLineAsync();
+            return await new StreamReader(await this.Client.GetStreamAsync()).ReadLineAsync();
         }
 
         public void Write(params string[] args)
@@ -50,7 +47,7 @@ namespace NSonic.Impl
 
         public async Task WriteAsync(params string[] args)
         {
-            var writer = new StreamWriter(this.Client.GetStream());
+            var writer = new StreamWriter(await this.Client.GetStreamAsync());
             await writer.WriteLineAsync(this.CreateMessage(args));
             await writer.FlushAsync();
         }
@@ -58,7 +55,7 @@ namespace NSonic.Impl
         private string CreateMessage(string[] args)
         {
             var message = string.Join(" ", args.Where(a => !string.IsNullOrEmpty(a))).Trim();
-            Assert.IsTrue(message.Length <= this.Environment.MaxBufferStringLength, "Message was too long");
+            Assert.IsTrue(message.Length <= this.Client.Environment.MaxBufferStringLength, "Message was too long");
 
             return message;
         }

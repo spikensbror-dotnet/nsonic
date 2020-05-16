@@ -13,7 +13,7 @@ namespace NSonic.Tests.Connections
     {
         private Fixture connection;
 
-        protected override string Mode => "fixture";
+        internal override ConnectionMode Mode => ConnectionMode.Ingest;
         protected override bool Async => false;
 
         [TestInitialize]
@@ -22,8 +22,8 @@ namespace NSonic.Tests.Connections
             base.Initialize();
 
             this.connection = new Fixture(this.SessionFactory
-                , new SonicRequestWriter()
-                , this.TcpClient
+                , this.RequestWriter
+                , this.Client
                 , StubConstants.Hostname
                 , StubConstants.Port
                 , StubConstants.Secret
@@ -46,7 +46,7 @@ namespace NSonic.Tests.Connections
 
             // Assert
 
-            Assert.AreEqual(StubConstants.ConnectedEnvironment, this.connection.environment);
+            Assert.AreEqual(StubConstants.ConnectedEnvironment, this.connection.client.Environment);
         }
 
         [TestMethod]
@@ -117,7 +117,7 @@ namespace NSonic.Tests.Connections
         {
             public Fixture(ISonicSessionFactory sessionFactory
                 , ISonicRequestWriter requestWriter
-                , IDisposableTcpClient tcpClient
+                , IDisposableSonicClient tcpClient
                 , string hostname
                 , int port
                 , string secret
@@ -127,7 +127,7 @@ namespace NSonic.Tests.Connections
                 //
             }
 
-            protected override string Mode => "fixture";
+            protected override ConnectionMode Mode => ConnectionMode.Ingest;
         }
     }
 }

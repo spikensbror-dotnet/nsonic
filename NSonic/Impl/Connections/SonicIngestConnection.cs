@@ -8,17 +8,17 @@ namespace NSonic.Impl.Connections
     {
         public SonicIngestConnection(ISonicSessionFactory sessionFactory
             , ISonicRequestWriter requestWriter
-            , IDisposableTcpClient tcpClient
+            , IDisposableSonicClient client
             , string hostname
             , int port
             , string secret
             )
-            : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
+            : base(sessionFactory, requestWriter, client, hostname, port, secret)
         {
             //
         }
 
-        protected override string Mode => "ingest";
+        protected override ConnectionMode Mode => ConnectionMode.Ingest;
 
         public int Count(string collection, string bucket = null, string @object = null)
         {
