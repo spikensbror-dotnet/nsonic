@@ -14,7 +14,7 @@ namespace NSonic.Tests
     /// This will setup a project-local Sonic environment that can be used to run
     /// these integration tests.
     /// </summary>
-    [TestClass]
+    [TestClass, Ignore]
     public class IntegrationTests
     {
         const string Hostname = "localhost";
