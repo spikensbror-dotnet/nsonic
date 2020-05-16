@@ -1,15 +1,33 @@
 ﻿using System.IO;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NSonic.Impl.Net
 {
-    class TcpClientAdapter : ITcpClient
+    class TcpClientAdapter : IDisposableTcpClient
     {
         private readonly TcpClient client;
 
-        public TcpClientAdapter(string hostname, int port)
+        public TcpClientAdapter()
         {
-            this.client = new TcpClient(hostname, port);
+            this.client = new TcpClient();
+
+            this.Semaphore = new SemaphoreSlim(1, 1);
+        }
+
+        public SemaphoreSlim Semaphore { get; }
+
+        public bool Connected => this.client.Connected;
+
+        public void Connect(string hostname, int port)
+        {
+            this.client.Connect(hostname, port);
+        }
+
+        public async Task ConnectAsync(string hostname, int port)
+        {
+            await this.client.ConnectAsync(hostname, port);
         }
 
         public void Dispose()

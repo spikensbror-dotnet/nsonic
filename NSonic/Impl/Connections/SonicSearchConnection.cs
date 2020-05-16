@@ -1,17 +1,19 @@
-﻿using NSonic.Utils;
+﻿using NSonic.Impl.Net;
+using NSonic.Utils;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
     sealed class SonicSearchConnection : SonicConnection, ISonicSearchConnection
     {
-        public SonicSearchConnection(ISonicSessionFactoryProvider sessionFactoryProvider
+        public SonicSearchConnection(ISonicSessionFactory sessionFactory
             , ISonicRequestWriter requestWriter
+            , IDisposableTcpClient tcpClient
             , string hostname
             , int port
             , string secret
             )
-            : base(sessionFactoryProvider, requestWriter, hostname, port, secret)
+            : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
         {
             //
         }

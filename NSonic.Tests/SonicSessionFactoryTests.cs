@@ -2,50 +2,30 @@
 using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Net;
+using System.Threading;
 
 namespace NSonic.Tests
 {
     [TestClass]
     public class SonicSessionFactoryTests
     {
-        private Mock<ITcpClient> client;
-
-        private SonicSessionFactory factory;
-
-        [TestInitialize]
-        public void Initialize()
-        {
-            this.client = new Mock<ITcpClient>();
-
-            this.factory = new SonicSessionFactory(this.client.Object);
-        }
-
         [TestMethod]
-        public void ShouldBeAbleToCreateSonicSession()
+        public void ShouldBeAbleToCreateSession()
         {
             // Arrange
 
+            var factory = new SonicSessionFactory();
+            var tcpClient = Mock.Of<ITcpClient>(tc => tc.Semaphore == new SemaphoreSlim(1, 1));
             var environment = new EnvironmentResponse(1, 42);
 
-            // Act / Assert
-
-            using (var result = this.factory.Create(environment))
-            {
-                Assert.AreSame(this.client.Object, ((SonicSession)result).Client);
-                Assert.AreEqual(environment, ((SonicSession)result).Environment);
-            }
-        }
-
-        [TestMethod]
-        public void ShouldDisposeItsTcpClient()
-        {
             // Act
 
-            this.factory.Dispose();
+            var result = factory.Create(tcpClient, environment);
 
             // Assert
 
-            this.client.Verify(c => c.Dispose(), Times.Once);
+            Assert.AreSame(tcpClient, ((SonicSession)result).Client);
+            Assert.AreEqual(environment, ((SonicSession)result).Environment);
         }
     }
 }

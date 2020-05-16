@@ -19,8 +19,9 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.connection = new SonicIngestConnection(this.SessionFactoryProvider
+            this.connection = new SonicIngestConnection(this.SessionFactory
                 , new SonicRequestWriter()
+                , this.TcpClient
                 , StubConstants.Hostname
                 , StubConstants.Port
                 , StubConstants.Secret

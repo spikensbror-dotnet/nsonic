@@ -10,15 +10,11 @@ namespace NSonic.Impl
 {
     class SonicSession : ISonicSession
     {
-        private readonly SemaphoreSlim semaphore;
-
-        public SonicSession(ITcpClient client, SemaphoreSlim semaphore, EnvironmentResponse environment)
+        public SonicSession(ITcpClient client, EnvironmentResponse environment)
         {
-            this.semaphore = semaphore;
-
             // As long as the session is alive, it should carry an exclusive lock of the TCP client
             // to prevent operations across threads.
-            this.semaphore.Wait();
+            client.Semaphore.Wait();
 
             this.Client = client;
             this.Environment = environment;
@@ -32,7 +28,7 @@ namespace NSonic.Impl
             GC.SuppressFinalize(this);
 
             // Release the TCP client lock.
-            this.semaphore.Release();
+            this.Client.Semaphore.Release();
         }
 
         public string Read()

@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Connections;
+using NSonic.Impl.Net;
 using NSonic.Tests.Stubs;
 using System.Threading.Tasks;
 
@@ -20,8 +21,9 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.connection = new Fixture(this.SessionFactoryProvider
+            this.connection = new Fixture(this.SessionFactory
                 , new SonicRequestWriter()
+                , this.TcpClient
                 , StubConstants.Hostname
                 , StubConstants.Port
                 , StubConstants.Secret
@@ -44,7 +46,7 @@ namespace NSonic.Tests.Connections
 
             // Assert
 
-            Assert.AreEqual(StubConstants.ConnectedEnvironment, this.connection.Environment);
+            Assert.AreEqual(StubConstants.ConnectedEnvironment, this.connection.environment);
         }
 
         [TestMethod]
@@ -113,13 +115,14 @@ namespace NSonic.Tests.Connections
 
         class Fixture : SonicConnection
         {
-            public Fixture(ISonicSessionFactoryProvider sessionFactoryProvider
+            public Fixture(ISonicSessionFactory sessionFactory
                 , ISonicRequestWriter requestWriter
+                , IDisposableTcpClient tcpClient
                 , string hostname
                 , int port
                 , string secret
                 )
-                : base(sessionFactoryProvider, requestWriter, hostname, port, secret)
+                : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
             {
                 //
             }

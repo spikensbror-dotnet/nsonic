@@ -1,5 +1,6 @@
 ﻿using NSonic.Impl;
 using NSonic.Impl.Connections;
+using NSonic.Impl.Net;
 
 namespace NSonic
 {
@@ -8,13 +9,6 @@ namespace NSonic
     /// </summary>
     public static class NSonicFactory
     {
-        private static ISonicSessionFactoryProvider SessionFactoryProvider { get; set; }
-
-        static NSonicFactory()
-        {
-            SessionFactoryProvider = new SonicSessionFactoryProvider();
-        }
-
         /// <summary>
         /// Creates a control mode connection.
         /// </summary>
@@ -27,7 +21,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicControlConnection(SessionFactoryProvider, new SonicRequestWriter(), hostname, port, secret);
+            return new SonicControlConnection(new SonicSessionFactory(), new SonicRequestWriter(), new TcpClientAdapter(), hostname, port, secret);
         }
 
         /// <summary>
@@ -42,7 +36,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicIngestConnection(SessionFactoryProvider, new SonicRequestWriter(), hostname, port, secret);
+            return new SonicIngestConnection(new SonicSessionFactory(), new SonicRequestWriter(), new TcpClientAdapter(), hostname, port, secret);
         }
 
         /// <summary>
@@ -57,7 +51,7 @@ namespace NSonic
             , string secret
             )
         {
-            return new SonicSearchConnection(SessionFactoryProvider, new SonicRequestWriter(), hostname, port, secret);
+            return new SonicSearchConnection(new SonicSessionFactory(), new SonicRequestWriter(), new TcpClientAdapter(), hostname, port, secret);
         }
     }
 }
