@@ -24,7 +24,7 @@ namespace NSonic.Tests
 
             // Assert
 
-            Assert.AreSame(tcpClient, ((Session)result).Client);
+            Assert.IsInstanceOfType(result, typeof(ISession));
         }
     }
 }

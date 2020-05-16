@@ -1,5 +1,4 @@
-﻿using NSonic.Impl.Net;
-using NSonic.Utils;
+﻿using NSonic.Utils;
 using System;
 using System.IO;
 using System.Linq;

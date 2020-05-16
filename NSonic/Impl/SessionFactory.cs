@@ -6,7 +6,7 @@ namespace NSonic.Impl
     {
         public ISession Create(IClient tcpClient)
         {
-            return new Session(tcpClient);
+            return new RetryingSession(new Session(tcpClient));
         }
     }
 }
