@@ -11,6 +11,7 @@ namespace NSonic.Tests
     [TestClass]
     public class SonicSessionTests
     {
+        private SemaphoreSlim semaphore;
         private Mock<ITcpClient> client;
 
         private EnvironmentResponse environment;
@@ -25,6 +26,7 @@ namespace NSonic.Tests
         [TestInitialize]
         public void Initialize()
         {
+            this.semaphore = new SemaphoreSlim(1, 1);
             this.client = new Mock<ITcpClient>();
 
             this.environment = new EnvironmentResponse(1, 20000);
@@ -33,10 +35,24 @@ namespace NSonic.Tests
             this.reader = new StreamReader(this.stream);
 
             this.client
+                .Setup(c => c.Semaphore)
+                .Returns(() => this.semaphore);
+
+            this.client
                 .Setup(c => c.GetStream())
                 .Returns(() => this.stream);
 
-            this.session = new SonicSession(this.client.Object, new SemaphoreSlim(1, 1), environment);
+            this.session = new SonicSession(this.client.Object, environment);
+        }
+
+        [TestMethod]
+        public void ShouldEnterAndExitSemaphore()
+        {
+            Assert.AreEqual(0, this.semaphore.CurrentCount);
+
+            this.session.Dispose();
+
+            Assert.AreEqual(1, this.semaphore.CurrentCount);
         }
 
         [TestMethod]

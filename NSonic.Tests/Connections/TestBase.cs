@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
+using NSonic.Impl.Net;
 using NSonic.Tests.Stubs;
 
 namespace NSonic.Tests.Connections
@@ -8,8 +9,9 @@ namespace NSonic.Tests.Connections
     public abstract class TestBase
     {
         internal MockSequence Sequence { get; private set; }
-        internal StubSessionFactoryProvider SessionFactoryProvider { get; private set; }
-        internal Mock<ISonicSession> Session => this.SessionFactoryProvider.PostConnectSession;
+        internal StubSessionFactory SessionFactory { get; private set; }
+        internal Mock<ISonicSession> Session => this.SessionFactory.PostConnectSession;
+        internal IDisposableTcpClient TcpClient => this.SessionFactory.TcpClient.Object;
 
         protected abstract string Mode { get; }
         protected abstract bool Async { get; }
@@ -19,7 +21,7 @@ namespace NSonic.Tests.Connections
         {
             this.Sequence = new MockSequence();
 
-            this.SessionFactoryProvider = new StubSessionFactoryProvider(this.Sequence, this.Mode, this.Async);
+            this.SessionFactory = new StubSessionFactory(this.Sequence, this.Mode, this.Async);
         }
 
         protected void SetupWriteWithOk(params string[] args)

@@ -2,6 +2,7 @@
 using NSonic.Impl.Net;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace NSonic.Tests.Net
 {
@@ -26,12 +27,45 @@ namespace NSonic.Tests.Net
         }
 
         [TestMethod]
+        public void ShouldBeAbleToConnectSynchronously()
+        {
+            using var client = new TcpClientAdapter();
+
+            Assert.IsFalse(client.Connected);
+
+            client.Connect("localhost", Port);
+
+            Assert.IsTrue(client.Connected);
+        }
+
+        [TestMethod]
+        public async Task ShouldBeAbleToConnectAsynchronously()
+        {
+            using var client = new TcpClientAdapter();
+
+            Assert.IsFalse(client.Connected);
+
+            await client.ConnectAsync("localhost", Port);
+
+            Assert.IsTrue(client.Connected);
+        }
+
+        [TestMethod]
         public void ShouldProvideAccessToInternalNetworkStream()
         {
-            using (var client = new TcpClientAdapter("localhost", Port))
-            {
-                Assert.IsNotNull(client.GetStream());
-            }
+            using var client = new TcpClientAdapter();
+
+            client.Connect("localhost", Port);
+
+            Assert.IsNotNull(client.GetStream());
+        }
+
+        [TestMethod]
+        public void ShouldProvideSemaphore()
+        {
+            using var client = new TcpClientAdapter();
+
+            Assert.AreEqual(1, client.Semaphore.CurrentCount);
         }
     }
 }

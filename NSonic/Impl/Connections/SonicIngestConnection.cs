@@ -1,17 +1,19 @@
-﻿using System;
+﻿using NSonic.Impl.Net;
+using System;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
     sealed class SonicIngestConnection : SonicConnection, ISonicIngestConnection
     {
-        public SonicIngestConnection(ISonicSessionFactoryProvider sessionFactoryProvider
+        public SonicIngestConnection(ISonicSessionFactory sessionFactory
             , ISonicRequestWriter requestWriter
+            , IDisposableTcpClient tcpClient
             , string hostname
             , int port
             , string secret
             )
-            : base(sessionFactoryProvider, requestWriter, hostname, port, secret)
+            : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
         {
             //
         }

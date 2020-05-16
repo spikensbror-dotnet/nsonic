@@ -1,9 +1,9 @@
-﻿using System;
+﻿using NSonic.Impl.Net;
 
 namespace NSonic.Impl
 {
-    interface ISonicSessionFactory : IDisposable
+    interface ISonicSessionFactory
     {
-        ISonicSession Create(EnvironmentResponse environment);
+        ISonicSession Create(ITcpClient tcpClient, EnvironmentResponse environment);
     }
 }

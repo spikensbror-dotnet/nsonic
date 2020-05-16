@@ -1,4 +1,5 @@
-﻿using NSonic.Utils;
+﻿using NSonic.Impl.Net;
+using NSonic.Utils;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -7,20 +8,25 @@ namespace NSonic.Impl.Connections
 {
     abstract class SonicConnection : ISonicConnection
     {
-        private readonly ISonicSessionFactoryProvider sessionFactoryProvider;
+        private readonly ISonicSessionFactory sessionFactory;
+        private readonly IDisposableTcpClient tcpClient;
         private readonly string hostname;
         private readonly int port;
         private readonly string secret;
 
-        protected SonicConnection(ISonicSessionFactoryProvider sessionFactoryProvider
+        internal EnvironmentResponse environment = EnvironmentResponse.Default;
+
+        protected SonicConnection(ISonicSessionFactory sessionFactory
             , ISonicRequestWriter requestWriter
+            , IDisposableTcpClient tcpClient
             , string hostname
             , int port
             , string secret
             )
         {
-            this.sessionFactoryProvider = sessionFactoryProvider;
+            this.sessionFactory = sessionFactory;
             this.RequestWriter = requestWriter;
+            this.tcpClient = tcpClient;
             this.hostname = hostname;
             this.port = port;
             this.secret = secret;
@@ -29,33 +35,30 @@ namespace NSonic.Impl.Connections
         protected abstract string Mode { get; }
 
         protected ISonicRequestWriter RequestWriter { get; }
-        protected ISonicSessionFactory SessionFactory { get; private set; }
-
-        public EnvironmentResponse Environment { get; private set; } = EnvironmentResponse.Default;
 
         public void Connect()
         {
-            this.CreateSessionFactory();
+            this.tcpClient.Connect(this.hostname, this.port);
 
             using (var session = this.CreateSession())
             {
-                this.Environment = this.RequestWriter.WriteStart(session, this.Mode, this.secret);
+                this.environment = this.RequestWriter.WriteStart(session, this.Mode, this.secret);
             }
         }
 
         public async Task ConnectAsync()
         {
-            this.CreateSessionFactory();
+            await this.tcpClient.ConnectAsync(this.hostname, this.port);
 
             using (var session = this.CreateSession())
             {
-                this.Environment = await this.RequestWriter.WriteStartAsync(session, this.Mode, this.secret);
+                this.environment = await this.RequestWriter.WriteStartAsync(session, this.Mode, this.secret);
             }
         }
 
         public void Dispose()
         {
-            if (this.SessionFactory != null)
+            if (this.tcpClient.Connected)
             {
                 using (var session = this.CreateSession())
                 {
@@ -69,22 +72,14 @@ namespace NSonic.Impl.Connections
                         Debug.WriteLine(e.ToString());
                     }
                 }
-
-                this.SessionFactory.Dispose();
             }
+
+            this.tcpClient.Dispose();
         }
 
         protected ISonicSession CreateSession()
         {
-            return this.SessionFactory.Create(this.Environment);
-        }
-
-        private void CreateSessionFactory()
-        {
-            // The reason for this is that the TCP client that is created along with the session
-            // factory will be instantly connected. Otherwise, we would've passed it in the
-            // constructor.
-            this.SessionFactory = this.sessionFactoryProvider.Create(this.hostname, this.port);
+            return this.sessionFactory.Create(this.tcpClient, this.environment);
         }
     }
 }
