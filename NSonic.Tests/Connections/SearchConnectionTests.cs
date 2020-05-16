@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using NSonic.Impl;
 using NSonic.Impl.Connections;
 using NSonic.Tests.Stubs;
@@ -8,29 +7,27 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicSearchConnectionTests : TestBase
+    public class SearchConnectionTests : TestBase
     {
         private const string Marker = "TSTMRKR";
         private const string Collection = "TSTCOLL";
         private const string Bucket = "TSTBCKT";
         private const string Terms = "result";
 
-        protected override string Mode => "search";
+        internal override ConnectionMode Mode => ConnectionMode.Search;
         protected override bool Async => false;
 
-        private SonicSearchConnection connection;
+        private SearchConnection connection;
 
         [TestInitialize]
         public override void Initialize()
         {
             base.Initialize();
 
-            this.connection = new SonicSearchConnection(this.SessionFactory
-                , new SonicRequestWriter()
-                , this.TcpClient
-                , StubConstants.Hostname
-                , StubConstants.Port
-                , StubConstants.Secret
+            this.connection = new SearchConnection(this.SessionFactory
+                , new RequestWriter()
+                , this.Client
+                , StubConstants.Configuration
                 );
         }
 

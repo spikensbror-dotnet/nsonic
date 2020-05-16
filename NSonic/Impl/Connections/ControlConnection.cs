@@ -4,21 +4,19 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
-    sealed class SonicControlConnection : SonicConnection, ISonicControlConnection
+    sealed class ControlConnection : Connection, ISonicControlConnection
     {
-        public SonicControlConnection(ISonicSessionFactory sessionFactory
-            , ISonicRequestWriter requestWriter
-            , IDisposableTcpClient tcpClient
-            , string hostname
-            , int port
-            , string secret
+        public ControlConnection(ISessionFactory sessionFactory
+            , IRequestWriter requestWriter
+            , IDisposableClient client
+            , Configuration configuration
             )
-            : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
+            : base(sessionFactory, requestWriter, client, configuration)
         {
             //
         }
 
-        protected override string Mode => "control";
+        protected override ConnectionMode Mode => ConnectionMode.Control;
 
         public string Info()
         {

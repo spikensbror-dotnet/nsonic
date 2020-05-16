@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace NSonic.Tests.Stubs
 {
-    static class FluentISonicSessionMockSetupExtensions
+    static class FluentISessionMockSetupExtensions
     {
-        public static Mock<ISonicSession> SetupRead(this Mock<ISonicSession> mock
+        public static Mock<ISession> SetupRead(this Mock<ISession> mock
             , MockSequence sequence
             , bool async
             , string result
@@ -32,7 +32,7 @@ namespace NSonic.Tests.Stubs
             return mock;
         }
 
-        public static Mock<ISonicSession> SetupWrite(this Mock<ISonicSession> mock
+        public static Mock<ISession> SetupWrite(this Mock<ISession> mock
             , MockSequence sequence
             , bool async
             , params string[] args
@@ -57,7 +57,7 @@ namespace NSonic.Tests.Stubs
             return mock;
         }
 
-        public static Mock<ISonicSession> SetupWriteWithResult(this Mock<ISonicSession> mock
+        public static Mock<ISession> SetupWriteWithResult(this Mock<ISession> mock
             , MockSequence sequence
             , bool async
             , string result
@@ -70,7 +70,7 @@ namespace NSonic.Tests.Stubs
                 ;
         }
 
-        public static Mock<ISonicSession> SetupWriteWithOk(this Mock<ISonicSession> mock
+        public static Mock<ISession> SetupWriteWithOk(this Mock<ISession> mock
             , MockSequence sequence
             , bool async
             , params string[] args

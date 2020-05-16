@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicConnectionTests : TestBase
+    public class ConnectionTests : TestBase
     {
         private Fixture connection;
 
-        protected override string Mode => "fixture";
+        internal override ConnectionMode Mode => ConnectionMode.Ingest;
         protected override bool Async => false;
 
         [TestInitialize]
@@ -22,11 +22,9 @@ namespace NSonic.Tests.Connections
             base.Initialize();
 
             this.connection = new Fixture(this.SessionFactory
-                , new SonicRequestWriter()
-                , this.TcpClient
-                , StubConstants.Hostname
-                , StubConstants.Port
-                , StubConstants.Secret
+                , this.RequestWriter
+                , this.Client
+                , StubConstants.Configuration
                 );
         }
 
@@ -46,7 +44,7 @@ namespace NSonic.Tests.Connections
 
             // Assert
 
-            Assert.AreEqual(StubConstants.ConnectedEnvironment, this.connection.environment);
+            Assert.AreEqual(StubConstants.ConnectedEnvironment, this.connection.client.Environment);
         }
 
         [TestMethod]
@@ -113,21 +111,19 @@ namespace NSonic.Tests.Connections
             this.VerifyAll();
         }
 
-        class Fixture : SonicConnection
+        class Fixture : Connection
         {
-            public Fixture(ISonicSessionFactory sessionFactory
-                , ISonicRequestWriter requestWriter
-                , IDisposableTcpClient tcpClient
-                , string hostname
-                , int port
-                , string secret
+            public Fixture(ISessionFactory sessionFactory
+                , IRequestWriter requestWriter
+                , IDisposableClient tcpClient
+                , Configuration configuration
                 )
-                : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
+                : base(sessionFactory, requestWriter, tcpClient, configuration)
             {
                 //
             }
 
-            protected override string Mode => "fixture";
+            protected override ConnectionMode Mode => ConnectionMode.Ingest;
         }
     }
 }

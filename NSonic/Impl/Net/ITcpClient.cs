@@ -1,10 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl.Net
 {
-    interface ITcpClient
+    interface ITcpClient : IDisposable
     {
         bool Connected { get; }
         SemaphoreSlim Semaphore { get; }

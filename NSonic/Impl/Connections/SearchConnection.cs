@@ -4,21 +4,19 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
-    sealed class SonicSearchConnection : SonicConnection, ISonicSearchConnection
+    sealed class SearchConnection : Connection, ISonicSearchConnection
     {
-        public SonicSearchConnection(ISonicSessionFactory sessionFactory
-            , ISonicRequestWriter requestWriter
-            , IDisposableTcpClient tcpClient
-            , string hostname
-            , int port
-            , string secret
+        public SearchConnection(ISessionFactory sessionFactory
+            , IRequestWriter requestWriter
+            , IDisposableClient client
+            , Configuration configuration
             )
-            : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
+            : base(sessionFactory, requestWriter, client, configuration)
         {
             //
         }
 
-        protected override string Mode => "search";
+        protected override ConnectionMode Mode => ConnectionMode.Search;
 
         public string[] Query(string collection
             , string bucket

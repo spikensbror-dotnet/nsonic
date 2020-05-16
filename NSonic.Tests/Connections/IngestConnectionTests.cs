@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace NSonic.Tests.Connections
 {
     [TestClass]
-    public class SonicIngestConnectionTests : TestBase
+    public class IngestConnectionTests : TestBase
     {
-        private SonicIngestConnection connection;
+        private IngestConnection connection;
 
-        protected override string Mode => "ingest";
+        internal override ConnectionMode Mode => ConnectionMode.Ingest;
         protected override bool Async => false;
 
         [TestInitialize]
@@ -19,12 +19,10 @@ namespace NSonic.Tests.Connections
         {
             base.Initialize();
 
-            this.connection = new SonicIngestConnection(this.SessionFactory
-                , new SonicRequestWriter()
-                , this.TcpClient
-                , StubConstants.Hostname
-                , StubConstants.Port
-                , StubConstants.Secret
+            this.connection = new IngestConnection(this.SessionFactory
+                , new RequestWriter()
+                , this.Client
+                , StubConstants.Configuration
                 );
         }
 

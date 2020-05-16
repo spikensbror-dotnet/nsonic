@@ -5,37 +5,40 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl.Net
 {
-    class TcpClientAdapter : IDisposableTcpClient
+    class TcpClientAdapter : ITcpClient
     {
-        private readonly TcpClient client;
+        private TcpClient client;
 
-        public TcpClientAdapter()
+        public bool Connected => this.client?.Connected ?? false;
+
+        public SemaphoreSlim Semaphore { get; private set; } = new SemaphoreSlim(1, 1);
+
+        public virtual void Connect(string hostname, int port)
         {
+            this.client?.Dispose();
             this.client = new TcpClient();
 
             this.Semaphore = new SemaphoreSlim(1, 1);
-        }
 
-        public SemaphoreSlim Semaphore { get; }
-
-        public bool Connected => this.client.Connected;
-
-        public void Connect(string hostname, int port)
-        {
             this.client.Connect(hostname, port);
         }
 
-        public async Task ConnectAsync(string hostname, int port)
+        public virtual async Task ConnectAsync(string hostname, int port)
         {
+            this.client?.Dispose();
+            this.client = new TcpClient();
+
+            this.Semaphore = new SemaphoreSlim(1, 1);
+
             await this.client.ConnectAsync(hostname, port);
         }
 
         public void Dispose()
         {
-            this.client.Dispose();
+            this.client?.Dispose();
         }
 
-        public Stream GetStream()
+        public virtual Stream GetStream()
         {
             return this.client.GetStream();
         }

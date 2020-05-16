@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 namespace NSonic.Tests
 {
     [TestClass]
-    public class SonicSessionTests
+    public class SessionTests
     {
         private SemaphoreSlim semaphore;
-        private Mock<ITcpClient> client;
+        private Mock<IClient> client;
 
         private EnvironmentResponse environment;
         private MemoryStream stream;
         private StreamWriter writer;
         private StreamReader reader;
 
-        private SonicSession session;
+        private Session session;
 
         protected virtual bool Async => false;
 
@@ -27,7 +27,7 @@ namespace NSonic.Tests
         public void Initialize()
         {
             this.semaphore = new SemaphoreSlim(1, 1);
-            this.client = new Mock<ITcpClient>();
+            this.client = new Mock<IClient>();
 
             this.environment = new EnvironmentResponse(1, 20000);
             this.stream = new MemoryStream();
@@ -35,14 +35,22 @@ namespace NSonic.Tests
             this.reader = new StreamReader(this.stream);
 
             this.client
+                .Setup(c => c.Environment)
+                .Returns(this.environment);
+
+            this.client
                 .Setup(c => c.Semaphore)
-                .Returns(() => this.semaphore);
+                .Returns(this.semaphore);
 
             this.client
                 .Setup(c => c.GetStream())
-                .Returns(() => this.stream);
+                .Returns(this.stream);
 
-            this.session = new SonicSession(this.client.Object, environment);
+            this.client
+                .Setup(c => c.GetStreamAsync())
+                .Returns(Task.FromResult((Stream)this.stream));
+
+            this.session = new Session(this.client.Object);
         }
 
         [TestMethod]

@@ -1,27 +1,31 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NSonic.Impl;
-using NSonic.Impl.Net;
 using NSonic.Tests.Stubs;
 
 namespace NSonic.Tests.Connections
 {
     public abstract class TestBase
     {
+        internal IRequestWriter RequestWriter { get; private set; }
         internal MockSequence Sequence { get; private set; }
         internal StubSessionFactory SessionFactory { get; private set; }
-        internal Mock<ISonicSession> Session => this.SessionFactory.PostConnectSession;
-        internal IDisposableTcpClient TcpClient => this.SessionFactory.TcpClient.Object;
+        internal IDisposableClient Client { get; private set; }
 
-        protected abstract string Mode { get; }
+        internal Mock<ISession> Session => this.SessionFactory.PostConnectSession;
+
+        internal abstract ConnectionMode Mode { get; }
         protected abstract bool Async { get; }
 
         [TestInitialize]
         public virtual void Initialize()
         {
+            this.RequestWriter = new RequestWriter();
             this.Sequence = new MockSequence();
-
             this.SessionFactory = new StubSessionFactory(this.Sequence, this.Mode, this.Async);
+
+            var connector = new ClientConnector(this.SessionFactory, this.RequestWriter);
+            this.Client = new Client(connector, this.SessionFactory.TcpClient.Object);
         }
 
         protected void SetupWriteWithOk(params string[] args)

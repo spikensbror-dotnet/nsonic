@@ -73,6 +73,7 @@ using (var control = NSonicFactory.Control(hostname, port, secret))
 
 ### v1.2.1
 
+* An NSonic connection will now attempt to reconnect to the Sonic server if the connection was lost.
 * Code improvements.
 
 ### v1.2

@@ -4,21 +4,19 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl.Connections
 {
-    sealed class SonicIngestConnection : SonicConnection, ISonicIngestConnection
+    sealed class IngestConnection : Connection, ISonicIngestConnection
     {
-        public SonicIngestConnection(ISonicSessionFactory sessionFactory
-            , ISonicRequestWriter requestWriter
-            , IDisposableTcpClient tcpClient
-            , string hostname
-            , int port
-            , string secret
+        public IngestConnection(ISessionFactory sessionFactory
+            , IRequestWriter requestWriter
+            , IDisposableClient client
+            , Configuration configuration
             )
-            : base(sessionFactory, requestWriter, tcpClient, hostname, port, secret)
+            : base(sessionFactory, requestWriter, client, configuration)
         {
             //
         }
 
-        protected override string Mode => "ingest";
+        protected override ConnectionMode Mode => ConnectionMode.Ingest;
 
         public int Count(string collection, string bucket = null, string @object = null)
         {

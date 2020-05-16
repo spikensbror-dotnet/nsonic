@@ -2,7 +2,7 @@
 
 namespace NSonic.Impl
 {
-    static class SonicRequestWriterAssert
+    static class RequestWriterAssert
     {
         public static void Ok(string response)
         {

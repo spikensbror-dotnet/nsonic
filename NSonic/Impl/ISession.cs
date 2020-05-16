@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
-    interface ISonicSession : IDisposable
+    interface ISession : IDisposable
     {
         string Read();
         Task<string> ReadAsync();

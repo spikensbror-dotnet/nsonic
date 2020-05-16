@@ -15,7 +15,7 @@ namespace NSonic.Tests
     /// these integration tests.
     /// </summary>
     [TestClass, Ignore]
-    public class SonicIntegrationTests
+    public class IntegrationTests
     {
         const string Hostname = "localhost";
         const int Port = 1491;

@@ -1,6 +1,7 @@
 ﻿using NSonic.Impl;
 using NSonic.Impl.Net;
 using System;
+using System.Threading.Tasks;
 
 namespace NSonic.TerminalApp
 {
@@ -8,37 +9,44 @@ namespace NSonic.TerminalApp
     {
         static void Main(string[] args)
         {
-            var environment = new EnvironmentResponse(1, 20000);
-            var sessionFactory = new SonicSessionFactory();
+            var sessionFactory = new SessionFactory();
+            var requestWriter = new RequestWriter();
+            var connector = new ClientConnector(sessionFactory, requestWriter);
 
-            using (var tcpClient = new TcpClientAdapter())
-            using (var session = sessionFactory.Create(tcpClient, environment))
+            using (var client = new Client(connector, new TcpClientAdapter()))
             {
-                Console.WriteLine(".NET Sonic Terminal");
-                Console.WriteLine("Write .read to read next line from the server.");
+                client.Configure(new Configuration("localhost", 1491, "SecretPassword", ConnectionMode.Control));
 
-                while (true)
+                client.Connect();
+
+                using (var session = sessionFactory.Create(client))
                 {
-                    var response = session.Read();
-                    Console.WriteLine($"R > {response}");
-
-                    if (response.StartsWith("ENDED"))
-                    {
-                        break;
-                    }
+                    Console.WriteLine(".NET Sonic Terminal");
+                    Console.WriteLine("Write .read to read next line from the server.");
 
                     while (true)
                     {
-                        Console.Write($"W > ");
+                        while (true)
+                        {
+                            Console.Write($"W > ");
 
-                        var input = Console.ReadLine();
-                        if (input.ToLower().Trim() == ".read")
-                        {
-                            break;
+                            var input = Console.ReadLine();
+                            if (input.ToLower().Trim() == ".read")
+                            {
+                                break;
+                            }
+                            else if (!string.IsNullOrWhiteSpace(input))
+                            {
+                                session.Write(input);
+                                break;
+                            }
                         }
-                        else if (!string.IsNullOrWhiteSpace(input))
+
+                        var response = session.Read();
+                        Console.WriteLine($"R > {response}");
+
+                        if (response.StartsWith("ENDED"))
                         {
-                            session.Write(input);
                             break;
                         }
                     }

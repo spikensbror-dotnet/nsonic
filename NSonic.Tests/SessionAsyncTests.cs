@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace NSonic.Tests.Connections
+namespace NSonic.Tests
 {
     [TestClass]
-    public class SonicSearchConnectionAsyncTests : SonicSearchConnectionTests
+    public class SessionAsyncTests : SessionTests
     {
         protected override bool Async => true;
     }
