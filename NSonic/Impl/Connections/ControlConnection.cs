@@ -8,7 +8,7 @@ namespace NSonic.Impl.Connections
     {
         public ControlConnection(ISessionFactory sessionFactory
             , IRequestWriter requestWriter
-            , IDisposableSonicClient client
+            , IDisposableClient client
             , Configuration configuration
             )
             : base(sessionFactory, requestWriter, client, configuration)

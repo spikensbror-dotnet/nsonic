@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSonic.Impl.Net;
-using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -29,7 +28,7 @@ namespace NSonic.Tests.Net
         }
 
         [TestMethod]
-        public void ShouldBeAbleToConnectSynchronously()
+        public void ShouldBeAbleToConnectAndReconnectSynchronously()
         {
             using var client = new TcpClientAdapter();
 
@@ -38,14 +37,22 @@ namespace NSonic.Tests.Net
             client.Connect("localhost", Port);
 
             Assert.IsTrue(client.Connected);
+
+            client.Connect("localhost", Port);
+
+            Assert.IsTrue(client.Connected);
         }
 
         [TestMethod]
-        public async Task ShouldBeAbleToConnectAsynchronously()
+        public async Task ShouldBeAbleToConnectAndReconnectAsynchronously()
         {
             using var client = new TcpClientAdapter();
 
             Assert.IsFalse(client.Connected);
+
+            await client.ConnectAsync("localhost", Port);
+
+            Assert.IsTrue(client.Connected);
 
             await client.ConnectAsync("localhost", Port);
 

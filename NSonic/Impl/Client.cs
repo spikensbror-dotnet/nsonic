@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
-    class Client : IDisposableSonicClient
+    class Client : IDisposableClient
     {
         private readonly IClientConnector connector;
         private readonly ITcpClient tcpClient;
@@ -21,7 +21,7 @@ namespace NSonic.Impl
         }
 
         public EnvironmentResponse Environment { get; private set; } = EnvironmentResponse.Default;
-        public SemaphoreSlim Semaphore { get; } = new SemaphoreSlim(1, 1);
+        public SemaphoreSlim Semaphore => this.tcpClient.Semaphore;
 
         public void Configure(Configuration configuration)
         {

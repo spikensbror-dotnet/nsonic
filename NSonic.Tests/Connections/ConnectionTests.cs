@@ -115,7 +115,7 @@ namespace NSonic.Tests.Connections
         {
             public Fixture(ISessionFactory sessionFactory
                 , IRequestWriter requestWriter
-                , IDisposableSonicClient tcpClient
+                , IDisposableClient tcpClient
                 , Configuration configuration
                 )
                 : base(sessionFactory, requestWriter, tcpClient, configuration)

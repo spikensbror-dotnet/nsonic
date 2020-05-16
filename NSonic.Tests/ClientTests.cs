@@ -4,6 +4,7 @@ using NSonic.Impl;
 using NSonic.Impl.Net;
 using NSonic.Tests.Stubs;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NSonic.Tests
@@ -35,16 +36,19 @@ namespace NSonic.Tests
         }
 
         [TestMethod]
-        public void Semaphore_ShouldProvideSingleCapacitySemaphore()
+        public void Semaphore_ShouldProvideTcpClientScopedSemaphore()
         {
-            // Act
+            // Arrange
 
-            var semaphore = this.client.Semaphore;
+            var expected = new SemaphoreSlim(1, 1);
 
-            // Assert
+            this.tcpClient
+                .Setup(tc => tc.Semaphore)
+                .Returns(expected);
 
-            Assert.AreEqual(1, semaphore.CurrentCount);
-            Assert.AreSame(semaphore, this.client.Semaphore);
+            // Act / Assert
+
+            Assert.AreSame(expected, this.client.Semaphore);
         }
 
         [TestMethod]

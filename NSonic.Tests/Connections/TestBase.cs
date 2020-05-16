@@ -10,7 +10,7 @@ namespace NSonic.Tests.Connections
         internal IRequestWriter RequestWriter { get; private set; }
         internal MockSequence Sequence { get; private set; }
         internal StubSessionFactory SessionFactory { get; private set; }
-        internal IDisposableSonicClient Client { get; private set; }
+        internal IDisposableClient Client { get; private set; }
 
         internal Mock<ISession> Session => this.SessionFactory.PostConnectSession;
 

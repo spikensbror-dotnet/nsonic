@@ -64,7 +64,7 @@ namespace NSonic
             return new SearchConnection(s_sessionFactory, s_requestWriter, CreateTcpClient(), configuration);
         }
 
-        private static IDisposableSonicClient CreateTcpClient()
+        private static IDisposableClient CreateTcpClient()
         {
             return new Client(s_connector, new TcpClientAdapter());
         }

@@ -5,12 +5,12 @@ namespace NSonic.Impl.Connections
     abstract class Connection : ISonicConnection
     {
         private readonly ISessionFactory sessionFactory;
-        internal readonly IDisposableSonicClient client;
+        internal readonly IDisposableClient client;
         private readonly Configuration configuration;
 
         protected Connection(ISessionFactory sessionFactory
             , IRequestWriter requestWriter
-            , IDisposableSonicClient client
+            , IDisposableClient client
             , Configuration configuration
             )
         {
