@@ -1,5 +1,7 @@
-﻿using NSonic.Utils;
+﻿using NSonic.Impl.Net;
+using NSonic.Utils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -7,17 +9,73 @@ using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
-    class Session : ISession
+    class LockingSession : ISession
     {
+        private readonly ISession session;
+        private readonly IClient client;
+
         private SemaphoreSlim semaphore;
 
+        public LockingSession(ISession session, IClient client)
+        {
+            this.session = session;
+            this.client = client;
+
+            this.client.Semaphore.Wait();
+            this.semaphore = this.client.Semaphore;
+        }
+
+        public void Dispose()
+        {
+            this.FixSemaphore();
+            this.semaphore.Release();
+
+            this.session.Dispose();
+        }
+
+        public string Read()
+        {
+            this.FixSemaphore();
+
+            return this.session.Read();
+        }
+
+        public Task<string> ReadAsync()
+        {
+            this.FixSemaphore();
+
+            return this.session.ReadAsync();
+        }
+
+        public void Write(params string[] args)
+        {
+            this.FixSemaphore();
+
+            this.session.Write(args);
+        }
+
+        public Task WriteAsync(params string[] args)
+        {
+            this.FixSemaphore();
+
+            return this.session.WriteAsync(args);
+        }
+
+        private void FixSemaphore()
+        {
+            if (this.client.Semaphore != this.semaphore)
+            {
+                this.client.Semaphore.Wait();
+                this.semaphore.Release();
+                this.semaphore = this.client.Semaphore;
+            }
+        }
+    }
+
+    class Session : ISession
+    {
         public Session(IClient client)
         {
-            // As long as the session is alive, it should carry an exclusive lock of the TCP client
-            // to prevent operations across threads.
-            this.semaphore = client.Semaphore;
-            this.semaphore.Wait();
-
             this.Client = client;
         }
 
@@ -25,30 +83,21 @@ namespace NSonic.Impl
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
-
-            // Release the TCP client lock.
-            this.semaphore.Release();
+            //
         }
 
         public string Read()
         {
-            this.FixSemaphore();
-
             return new StreamReader(this.Client.GetStream()).ReadLine();
         }
 
         public async Task<string> ReadAsync()
         {
-            this.FixSemaphore();
-
             return await new StreamReader(await this.Client.GetStreamAsync()).ReadLineAsync();
         }
 
         public void Write(params string[] args)
         {
-            this.FixSemaphore();
-
             var writer = new StreamWriter(this.Client.GetStream());
             writer.WriteLine(this.CreateMessage(args));
             writer.Flush();
@@ -56,8 +105,6 @@ namespace NSonic.Impl
 
         public async Task WriteAsync(params string[] args)
         {
-            this.FixSemaphore();
-
             var writer = new StreamWriter(await this.Client.GetStreamAsync());
             await writer.WriteLineAsync(this.CreateMessage(args));
             await writer.FlushAsync();
@@ -69,16 +116,6 @@ namespace NSonic.Impl
             Assert.IsTrue(message.Length <= this.Client.Environment.MaxBufferStringLength, "Message was too long", message);
 
             return message;
-        }
-
-        private void FixSemaphore()
-        {
-            if (this.Client.Semaphore != this.semaphore)
-            {
-                this.semaphore.Release();
-            }
-
-            this.semaphore = this.Client.Semaphore;
         }
     }
 }

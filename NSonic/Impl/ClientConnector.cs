@@ -2,16 +2,19 @@
 using NSonic.Utils;
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
     class ClientConnector : IClientConnector
     {
+        private readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+
         private readonly ISessionFactory sessionFactory;
         private readonly IStartRequestWriter startRequestWriter;
 
-        public ClientConnector(ISessionFactory sessionFactory
+        public ClientConnector(INonLockingSessionFactory sessionFactory
             , IStartRequestWriter startRequestWriter
             )
         {
@@ -21,38 +24,65 @@ namespace NSonic.Impl
 
         public EnvironmentResponse Connect(IClient client, ITcpClient tcpClient, Configuration configuration)
         {
-            tcpClient.Connect(configuration.Hostname, configuration.Port);
+            this.semaphore.Wait();
 
-            using (var session = this.sessionFactory.Create(client))
+            try
             {
-                return this.startRequestWriter.WriteStart(session, configuration.Mode, configuration.Secret);
+                tcpClient.Connect(configuration.Hostname, configuration.Port);
+
+                using (var session = this.sessionFactory.Create(client))
+                {
+                    return this.startRequestWriter.WriteStart(session, configuration.Mode, configuration.Secret);
+                }
+            }
+            finally
+            {
+                this.semaphore.Release();
             }
         }
 
         public async Task<EnvironmentResponse> ConnectAsync(IClient client, ITcpClient tcpClient, Configuration configuration)
         {
-            await tcpClient.ConnectAsync(configuration.Hostname, configuration.Port);
+            await this.semaphore.WaitAsync();
 
-            using (var session = this.sessionFactory.Create(client))
+            try
             {
-                return await this.startRequestWriter.WriteStartAsync(session, configuration.Mode, configuration.Secret);
+                await tcpClient.ConnectAsync(configuration.Hostname, configuration.Port);
+
+                using (var session = this.sessionFactory.Create(client))
+                {
+                    return await this.startRequestWriter.WriteStartAsync(session, configuration.Mode, configuration.Secret);
+                }
+            }
+            finally
+            {
+                this.semaphore.Release();
             }
         }
 
         public void Disconnect(IClient client)
         {
-            using (var session = this.sessionFactory.Create(client))
+            this.semaphore.Wait();
+
+            try
             {
-                try
+                using (var session = this.sessionFactory.Create(client))
                 {
-                    session.Write("QUIT");
-                    var response = session.Read();
-                    Assert.IsTrue(response.StartsWith("ENDED"), "Quit failed when disposing sonic connection", response);
+                    try
+                    {
+                        session.Write("QUIT");
+                        var response = session.Read();
+                        Assert.IsTrue(response.StartsWith("ENDED"), "Quit failed when disposing sonic connection", response);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.ToString());
+                    }
                 }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.ToString());
-                }
+            }
+            finally
+            {
+                this.semaphore.Release();
             }
         }
     }

@@ -9,9 +9,10 @@ namespace NSonic
     /// </summary>
     public static class NSonicFactory
     {
+        private static readonly NonLockingSessionFactory s_nonLockingSessionFactory = new NonLockingSessionFactory();
         private static readonly SessionFactory s_sessionFactory = new SessionFactory();
         private static readonly RequestWriter s_requestWriter = new RequestWriter();
-        private static readonly ClientConnector s_connector = new ClientConnector(s_sessionFactory, s_requestWriter);
+        private static readonly ClientConnector s_connector = new ClientConnector(s_nonLockingSessionFactory, s_requestWriter);
 
         /// <summary>
         /// Creates a control mode connection.

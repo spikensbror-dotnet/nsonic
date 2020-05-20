@@ -19,7 +19,7 @@ namespace NSonic.Tests
         private StreamWriter writer;
         private StreamReader reader;
 
-        private Session session;
+        private LockingSession session;
 
         protected virtual bool Async => false;
 
@@ -50,7 +50,9 @@ namespace NSonic.Tests
                 .Setup(c => c.GetStreamAsync())
                 .Returns(Task.FromResult((Stream)this.stream));
 
-            this.session = new Session(this.client.Object);
+            // TODO: Separate testing for locking session to another test.
+
+            this.session = new LockingSession(new Session(this.client.Object), this.client.Object);
         }
 
         [TestMethod]

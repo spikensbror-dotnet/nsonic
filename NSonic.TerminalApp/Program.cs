@@ -9,9 +9,10 @@ namespace NSonic.TerminalApp
     {
         static void Main(string[] args)
         {
+            var nonLockingSessionFactory = new NonLockingSessionFactory();
             var sessionFactory = new SessionFactory();
             var requestWriter = new RequestWriter();
-            var connector = new ClientConnector(sessionFactory, requestWriter);
+            var connector = new ClientConnector(nonLockingSessionFactory, requestWriter);
 
             using (var client = new Client(connector, new TcpClientAdapter()))
             {
