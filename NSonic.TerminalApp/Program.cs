@@ -15,7 +15,7 @@ namespace NSonic.TerminalApp
 
             using (var client = new Client(connector, new TcpClientAdapter()))
             {
-                client.Configure(new Configuration("localhost", 1491, "SecretPassword", ConnectionMode.Control));
+                client.Configure(new Configuration("localhost", 1491, "SecretPassword", ConnectionMode.Search));
 
                 client.Connect();
 
