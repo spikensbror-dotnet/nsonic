@@ -16,7 +16,11 @@ namespace NSonic.Impl.Net
         public virtual void Connect(string hostname, int port)
         {
             this.client?.Dispose();
-            this.client = new TcpClient();
+            this.client = new TcpClient
+            {
+                ReceiveTimeout = 5000,
+                SendTimeout = 5000
+            };
 
             this.Semaphore = new SemaphoreSlim(1, 1);
 
