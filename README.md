@@ -15,8 +15,9 @@ Go and read the [documentation](https://dev.azure.com/cyaspik/DotNet/_wiki/wikis
 
 ### v1.3
 
-* An NSonic connection will now attempt to reconnect to the Sonic server if the connection was lost.
+* If an NSonic connection operation fails, it can be safely retried.
 * Code improvements.
+* Fixed threading issues that would result in deadlocks.
 
 ### v1.2
 
