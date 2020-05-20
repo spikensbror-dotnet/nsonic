@@ -13,7 +13,7 @@ namespace NSonic
         /// <param name="message">The message of the exception.</param>
         /// <param name="actual">Actual value.</param>
         internal AssertionException(string message, string actual)
-            : base(message + (string.IsNullOrEmpty(actual) ? "" : $" : {actual}"))
+            : base($"{message} : {actual}")
         {
             //
         }

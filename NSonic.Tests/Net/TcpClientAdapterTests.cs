@@ -28,6 +28,16 @@ namespace NSonic.Tests.Net
         }
 
         [TestMethod]
+        public void ShouldProvideSemaphore()
+        {
+            using var client = new TcpClientAdapter();
+
+            var semaphore = client.Semaphore;
+            Assert.AreEqual(1, semaphore.CurrentCount);
+            Assert.AreSame(client.Semaphore, semaphore);
+        }
+
+        [TestMethod]
         public void ShouldBeAbleToConnectAndReconnectSynchronously()
         {
             using var client = new TcpClientAdapter();
