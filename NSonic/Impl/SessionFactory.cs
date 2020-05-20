@@ -4,8 +4,6 @@
     {
         public ISession Create(IClient client)
         {
-            // return new RetryingSession(new LockingSession(new Session(client), client));
-
             return new LockingSession(new Session(client), client);
         }
     }
