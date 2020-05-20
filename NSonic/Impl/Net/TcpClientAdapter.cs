@@ -11,12 +11,10 @@ namespace NSonic.Impl.Net
 
         public bool Connected => this.client?.Connected ?? false;
 
-        public SemaphoreSlim Semaphore { get; private set; } = new SemaphoreSlim(1, 1);
+        public SemaphoreSlim Semaphore { get; } = new SemaphoreSlim(1, 1);
 
         public virtual void Connect(string hostname, int port)
         {
-            this.Semaphore = new SemaphoreSlim(1, 1);
-
             this.client?.Dispose();
             this.client = new TcpClient
             {
@@ -29,8 +27,6 @@ namespace NSonic.Impl.Net
 
         public virtual async Task ConnectAsync(string hostname, int port)
         {
-            this.Semaphore = new SemaphoreSlim(1, 1);
-
             this.client?.Dispose();
             this.client = new TcpClient
             {

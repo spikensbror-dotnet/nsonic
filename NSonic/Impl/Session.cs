@@ -14,61 +14,37 @@ namespace NSonic.Impl
         private readonly ISession session;
         private readonly IClient client;
 
-        private SemaphoreSlim semaphore;
-
         public LockingSession(ISession session, IClient client)
         {
             this.session = session;
             this.client = client;
-
             this.client.Semaphore.Wait();
-            this.semaphore = this.client.Semaphore;
         }
 
         public void Dispose()
         {
-            this.FixSemaphore();
-            this.semaphore.Release();
-
+            this.client.Semaphore.Release();
             this.session.Dispose();
         }
 
         public string Read()
         {
-            this.FixSemaphore();
-
             return this.session.Read();
         }
 
         public Task<string> ReadAsync()
         {
-            this.FixSemaphore();
-
             return this.session.ReadAsync();
         }
 
         public void Write(params string[] args)
         {
-            this.FixSemaphore();
-
             this.session.Write(args);
         }
 
         public Task WriteAsync(params string[] args)
         {
-            this.FixSemaphore();
-
             return this.session.WriteAsync(args);
-        }
-
-        private void FixSemaphore()
-        {
-            if (this.client.Semaphore != this.semaphore)
-            {
-                this.client.Semaphore.Wait();
-                this.semaphore.Release();
-                this.semaphore = this.client.Semaphore;
-            }
         }
     }
 
