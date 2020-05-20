@@ -14,7 +14,7 @@ namespace NSonic.Tests
     /// This will setup a project-local Sonic environment that can be used to run
     /// these integration tests.
     /// </summary>
-    [TestClass, Ignore]
+    [TestClass]
     public class IntegrationTests
     {
         const string Hostname = "localhost";
@@ -36,6 +36,15 @@ namespace NSonic.Tests
                 await search.ConnectAsync();
                 await search.QueryAsync("messages", "user:1", "s");
                 await search.SuggestAsync("messages", "user:1", "s");
+
+                await search.QueryAsync("ContentIndex", "default", "example");
+                await search.SuggestAsync("ContentIndex", "default", "example");
+                await search.QueryAsync("ContentIndex", "default", "example");
+                await search.QueryAsync("ContentIndex", "default", "example");
+                await search.QueryAsync("ContentIndex", "default", "example");
+                await search.SuggestAsync("ContentIndex", "default", "example");
+                await search.SuggestAsync("ContentIndex", "default", "example");
+                await search.SuggestAsync("ContentIndex", "default", "example");
             }
 
             using (var ingest = NSonicFactory.Ingest(Hostname, Port, Secret))
@@ -63,8 +72,14 @@ namespace NSonic.Tests
             using (var search = NSonicFactory.Search(Hostname, Port, Secret))
             {
                 search.Connect();
-                search.Query("messages", "user:1", "s");
-                search.Suggest("messages", "user:1", "s");
+                search.Query("ContentIndex", "default", "example");
+                search.Suggest("ContentIndex", "default", "example");
+                search.Query("ContentIndex", "default", "example");
+                search.Query("ContentIndex", "default", "example");
+                search.Query("ContentIndex", "default", "example");
+                search.Suggest("ContentIndex", "default", "example");
+                search.Suggest("ContentIndex", "default", "example");
+                search.Suggest("ContentIndex", "default", "example");
             }
 
             using (var ingest = NSonicFactory.Ingest(Hostname, Port, Secret))

@@ -54,7 +54,7 @@ namespace NSonic.Impl
         private string CreateMessage(string[] args)
         {
             var message = string.Join(" ", args.Where(a => !string.IsNullOrEmpty(a))).Trim();
-            Assert.IsTrue(message.Length <= this.Client.Environment.MaxBufferStringLength, "Message was too long");
+            Assert.IsTrue(message.Length <= this.Client.Environment.MaxBufferStringLength, "Message was too long", message);
 
             return message;
         }

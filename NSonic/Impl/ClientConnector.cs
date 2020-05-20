@@ -46,7 +46,8 @@ namespace NSonic.Impl
                 try
                 {
                     session.Write("QUIT");
-                    Assert.IsTrue(session.Read().StartsWith("ENDED"), "Quit failed when disposing sonic connection");
+                    var response = session.Read();
+                    Assert.IsTrue(response.StartsWith("ENDED"), "Quit failed when disposing sonic connection", response);
                 }
                 catch (Exception e)
                 {

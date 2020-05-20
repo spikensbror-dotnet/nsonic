@@ -39,7 +39,7 @@ namespace NSonic.Impl.Connections
                     );
 
                 var response = session.Read();
-                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker");
+                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker", response);
 
                 var marker = response.Substring("PENDING ".Length);
 
@@ -63,7 +63,7 @@ namespace NSonic.Impl.Connections
                     );
 
                 var response = await session.ReadAsync();
-                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker");
+                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker", response);
 
                 var marker = response.Substring("PENDING ".Length);
 
@@ -85,7 +85,7 @@ namespace NSonic.Impl.Connections
                     );
 
                 var response = session.Read();
-                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker");
+                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker", response);
 
                 var marker = response.Substring("PENDING ".Length);
 
@@ -107,7 +107,7 @@ namespace NSonic.Impl.Connections
                     );
 
                 var response = await session.ReadAsync();
-                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker");
+                Assert.IsTrue(response.StartsWith("PENDING"), "Expected pending marker", response);
 
                 var marker = response.Substring("PENDING ".Length);
 
@@ -117,7 +117,7 @@ namespace NSonic.Impl.Connections
 
         private string[] ParseQueryResponse(string marker, string response)
         {
-            Assert.IsTrue(response.StartsWith($"EVENT QUERY {marker}"), "Expected query result");
+            Assert.IsTrue(response.StartsWith($"EVENT QUERY {marker}"), "Expected query result", response);
 
             return response
                 .Substring($"EVENT QUERY {marker} ".Length)
@@ -126,7 +126,7 @@ namespace NSonic.Impl.Connections
 
         private string[] ParseSuggestResponse(string marker, string response)
         {
-            Assert.IsTrue(response.StartsWith($"EVENT SUGGEST {marker}"), "Expected suggest result");
+            Assert.IsTrue(response.StartsWith($"EVENT SUGGEST {marker}"), "Expected suggest result", response);
 
             return response
                 .Substring($"EVENT SUGGEST {marker} ".Length)
