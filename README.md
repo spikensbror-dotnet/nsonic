@@ -13,13 +13,13 @@ Go and read the [documentation](https://dev.azure.com/cyaspik/DotNet/_wiki/wikis
 
 ## Changelog
 
-### v1.3
+### v1.3.1
 
 * If an NSonic connection operation fails, it can be safely retried.
 * Code improvements.
 * Fixed threading issues that would result in deadlocks.
 
-### v1.2
+### v1.2.0
 
 * Implemented asynchronous equivalents to most functionality.
 * Changed the versioning scheme to conform to [Semantic Versioning](https://semver.org/).
