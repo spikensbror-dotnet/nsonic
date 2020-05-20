@@ -15,6 +15,8 @@ namespace NSonic.Impl.Net
 
         public virtual void Connect(string hostname, int port)
         {
+            this.Semaphore = new SemaphoreSlim(1, 1);
+
             this.client?.Dispose();
             this.client = new TcpClient
             {
@@ -22,17 +24,19 @@ namespace NSonic.Impl.Net
                 SendTimeout = 5000
             };
 
-            this.Semaphore = new SemaphoreSlim(1, 1);
-
             this.client.Connect(hostname, port);
         }
 
         public virtual async Task ConnectAsync(string hostname, int port)
         {
-            this.client?.Dispose();
-            this.client = new TcpClient();
-
             this.Semaphore = new SemaphoreSlim(1, 1);
+
+            this.client?.Dispose();
+            this.client = new TcpClient
+            {
+                ReceiveTimeout = 5000,
+                SendTimeout = 5000
+            };
 
             await this.client.ConnectAsync(hostname, port);
         }
