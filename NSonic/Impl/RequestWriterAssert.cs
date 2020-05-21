@@ -6,17 +6,17 @@ namespace NSonic.Impl
     {
         public static void Ok(string response)
         {
-            Assert.IsTrue(response.StartsWith("OK"), "Expected OK response");
+            Assert.IsTrue(response.StartsWith("OK"), "Expected OK response", response);
         }
 
         public static void Result(string response)
         {
-            Assert.IsTrue(response.StartsWith("RESULT "), "Expected RESULT response");
+            Assert.IsTrue(response.StartsWith("RESULT "), "Expected RESULT response", response);
         }
 
         public static void Connected(string response)
         {
-            Assert.IsTrue(response.StartsWith("CONNECTED"), "Did not receive connection confirmation from the server");
+            Assert.IsTrue(response.StartsWith("CONNECTED"), "Did not receive connection confirmation from the server", response);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace NSonic.Impl
     {
         public static EnvironmentResponse Parse(string response)
         {
-            Assert.IsTrue(response.StartsWith("STARTED"), "Failed to start control session");
+            Assert.IsTrue(response.StartsWith("STARTED"), "Failed to start control session", response);
 
             var protocol = 0;
             var buffer = 0;

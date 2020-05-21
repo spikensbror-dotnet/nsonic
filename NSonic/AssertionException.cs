@@ -11,8 +11,9 @@ namespace NSonic
         /// Constructs a new assertion exception with the given message.
         /// </summary>
         /// <param name="message">The message of the exception.</param>
-        internal AssertionException(string message)
-            : base(message)
+        /// <param name="actual">Actual value.</param>
+        internal AssertionException(string message, string actual)
+            : base($"{message} : {actual}")
         {
             //
         }

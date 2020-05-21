@@ -1,19 +1,57 @@
-﻿using NSonic.Utils;
+﻿using NSonic.Impl.Net;
+using NSonic.Utils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl
 {
+    class LockingSession : ISession
+    {
+        private readonly ISession session;
+        private readonly IClient client;
+
+        public LockingSession(ISession session, IClient client)
+        {
+            this.session = session;
+            this.client = client;
+            this.client.Semaphore.Wait();
+        }
+
+        public void Dispose()
+        {
+            this.client.Semaphore.Release();
+            this.session.Dispose();
+        }
+
+        public string Read()
+        {
+            return this.session.Read();
+        }
+
+        public Task<string> ReadAsync()
+        {
+            return this.session.ReadAsync();
+        }
+
+        public void Write(params string[] args)
+        {
+            this.session.Write(args);
+        }
+
+        public Task WriteAsync(params string[] args)
+        {
+            return this.session.WriteAsync(args);
+        }
+    }
+
     class Session : ISession
     {
         public Session(IClient client)
         {
-            // As long as the session is alive, it should carry an exclusive lock of the TCP client
-            // to prevent operations across threads.
-            client.Semaphore.Wait();
-
             this.Client = client;
         }
 
@@ -21,10 +59,7 @@ namespace NSonic.Impl
 
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
-
-            // Release the TCP client lock.
-            this.Client.Semaphore.Release();
+            //
         }
 
         public string Read()
@@ -54,7 +89,7 @@ namespace NSonic.Impl
         private string CreateMessage(string[] args)
         {
             var message = string.Join(" ", args.Where(a => !string.IsNullOrEmpty(a))).Trim();
-            Assert.IsTrue(message.Length <= this.Client.Environment.MaxBufferStringLength, "Message was too long");
+            Assert.IsTrue(message.Length <= this.Client.Environment.MaxBufferStringLength, "Message was too long", message);
 
             return message;
         }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NSonic.Tests.Stubs
 {
-    class StubSessionFactory : ISessionFactory
+    class StubSessionFactory : INonLockingSessionFactory
     {
         public StubSessionFactory(MockSequence sequence, ConnectionMode mode, bool async)
         {
