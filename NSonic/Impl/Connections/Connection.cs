@@ -18,6 +18,8 @@ namespace NSonic.Impl.Connections
             this.RequestWriter = requestWriter;
             this.client = client;
             this.configuration = configuration;
+
+            this.client.Configure(this.configuration.WithMode(this.Mode));
         }
 
         protected abstract ConnectionMode Mode { get; }
@@ -26,15 +28,11 @@ namespace NSonic.Impl.Connections
 
         public void Connect()
         {
-            this.client.Configure(this.configuration.WithMode(this.Mode));
-
             this.client.Connect();
         }
 
         public async Task ConnectAsync()
         {
-            this.client.Configure(this.configuration.WithMode(this.Mode));
-
             await this.client.ConnectAsync();
         }
 
