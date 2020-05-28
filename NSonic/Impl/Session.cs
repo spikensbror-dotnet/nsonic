@@ -50,6 +50,11 @@ namespace NSonic.Impl
 
     class Session : ISession
     {
+
+        private StreamReader streamReader;
+
+        private StreamWriter streamWriter;
+
         public Session(IClient client)
         {
             this.Client = client;
@@ -59,31 +64,48 @@ namespace NSonic.Impl
 
         public void Dispose()
         {
-            //
         }
 
         public string Read()
         {
-            return new StreamReader(this.Client.GetStream()).ReadLine();
+            if (streamReader == null)
+            {
+                streamReader = new StreamReader(this.Client.GetStream());
+            }
+
+            return streamReader.ReadLine();
         }
 
         public async Task<string> ReadAsync()
         {
-            return await new StreamReader(await this.Client.GetStreamAsync()).ReadLineAsync();
+            if (streamReader == null)
+            {
+                streamReader = new StreamReader(await this.Client.GetStreamAsync());
+            }
+
+            return await streamReader.ReadLineAsync();
         }
 
         public void Write(params string[] args)
         {
-            var writer = new StreamWriter(this.Client.GetStream());
-            writer.WriteLine(this.CreateMessage(args));
-            writer.Flush();
+            if (streamWriter == null)
+            {
+                streamWriter = new StreamWriter(this.Client.GetStream());
+            }
+
+            streamWriter.WriteLine(this.CreateMessage(args));
+            streamWriter.Flush();
         }
 
         public async Task WriteAsync(params string[] args)
         {
-            var writer = new StreamWriter(await this.Client.GetStreamAsync());
-            await writer.WriteLineAsync(this.CreateMessage(args));
-            await writer.FlushAsync();
+            if (streamWriter == null)
+            {
+                streamWriter = new StreamWriter(await this.Client.GetStreamAsync());
+            }
+
+            await streamWriter.WriteLineAsync(this.CreateMessage(args));
+            await streamWriter.FlushAsync();
         }
 
         private string CreateMessage(string[] args)
