@@ -102,6 +102,33 @@ namespace NSonic.Tests
         }
 
         [TestMethod]
+        public async Task Read_ShouldBeAbleToReadFromMultiSegmentedResponse()
+        {
+            // Arrange
+
+            var expectedFirstLine = "This is a test";
+            var expectedSecondLine = "Followed by this";
+
+            this.serverWriter.WriteLine($"{expectedFirstLine}\r\n{expectedSecondLine}\r\n");
+            this.serverWriter.Flush();
+
+            this.stream.Seek(0, SeekOrigin.Begin);
+
+            // Act / Assert
+
+            if (this.Async)
+            {
+                Assert.AreEqual(expectedFirstLine, await this.session.ReadAsync());
+                Assert.AreEqual(expectedSecondLine, await this.session.ReadAsync());
+            }
+            else
+            {
+                Assert.AreEqual(expectedFirstLine, this.session.Read());
+                Assert.AreEqual(expectedSecondLine, this.session.Read());
+            }
+        }
+
+        [TestMethod]
         public async Task Write_ShouldBeAbleToWriteToStream()
         {
             // Arrange

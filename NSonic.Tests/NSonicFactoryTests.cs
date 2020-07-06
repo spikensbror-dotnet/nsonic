@@ -12,28 +12,25 @@ namespace NSonic.Tests
         [TestMethod]
         public void ShouldBeAbleToCreateSearchConnection()
         {
-            using (var connection = NSonicFactory.Search(Hostname, Port, Secret))
-            {
-                Assert.IsNotNull(connection);
-            }
+            using var connection = NSonicFactory.Search(Hostname, Port, Secret);
+
+            Assert.IsNotNull(connection);
         }
 
         [TestMethod]
         public void ShouldBeAbleToCreateControlConnection()
         {
-            using (var connection = NSonicFactory.Control(Hostname, Port, Secret))
-            {
-                Assert.IsNotNull(connection);
-            }
+            using var connection = NSonicFactory.Control(Hostname, Port, Secret);
+
+            Assert.IsNotNull(connection);
         }
 
         [TestMethod]
         public void ShouldBeAbleToCreateIngestConnection()
         {
-            using (var connection = NSonicFactory.Ingest(Hostname, Port, Secret))
-            {
-                Assert.IsNotNull(connection);
-            }
+            using var connection = NSonicFactory.Ingest(Hostname, Port, Secret);
+
+            Assert.IsNotNull(connection);
         }
     }
 }
