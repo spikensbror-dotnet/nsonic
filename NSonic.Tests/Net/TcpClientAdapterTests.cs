@@ -76,7 +76,8 @@ namespace NSonic.Tests.Net
 
             client.Connect("localhost", Port);
 
-            Assert.IsNotNull(client.GetStream());
+            Assert.IsNotNull(client.StreamReader);
+            Assert.IsNotNull(client.StreamWriter);
         }
 
         [TestMethod]
@@ -94,7 +95,7 @@ namespace NSonic.Tests.Net
             {
                 // Since Connected only reports as of the last operation, we must send or receive data to
                 // get the state as of now.
-                client.GetStream().Write(new byte[0], 0, 0);
+                client.StreamWriter.BaseStream.Write(new byte[0], 0, 0);
 
                 // To deal with reconnection in real scenarios, the resulting IOException should be caught and
                 // then attempt a retry with the exact same client.

@@ -16,8 +16,10 @@ namespace NSonic.Tests
 
         private EnvironmentResponse environment;
         private MemoryStream stream;
-        private StreamWriter writer;
-        private StreamReader reader;
+        private StreamWriter serverWriter;
+        private StreamReader serverReader;
+        private StreamWriter clientWriter;
+        private StreamReader clientReader;
 
         private LockingSession session;
 
@@ -31,8 +33,10 @@ namespace NSonic.Tests
 
             this.environment = new EnvironmentResponse(1, 20000);
             this.stream = new MemoryStream();
-            this.writer = new StreamWriter(this.stream);
-            this.reader = new StreamReader(this.stream);
+            this.serverWriter = new StreamWriter(this.stream);
+            this.serverReader = new StreamReader(this.stream);
+            this.clientWriter = new StreamWriter(this.stream);
+            this.clientReader = new StreamReader(this.stream);
 
             this.client
                 .Setup(c => c.Environment)
@@ -43,12 +47,20 @@ namespace NSonic.Tests
                 .Returns(this.semaphore);
 
             this.client
-                .Setup(c => c.GetStream())
-                .Returns(this.stream);
+                .Setup(c => c.GetStreamWriter())
+                .Returns(this.clientWriter);
 
             this.client
-                .Setup(c => c.GetStreamAsync())
-                .Returns(Task.FromResult((Stream)this.stream));
+                .Setup(c => c.GetStreamWriterAsync())
+                .ReturnsAsync(this.clientWriter);
+
+            this.client
+                .Setup(c => c.GetStreamReader())
+                .Returns(this.clientReader);
+
+            this.client
+                .Setup(c => c.GetStreamReaderAsync())
+                .ReturnsAsync(this.clientReader);
 
             // TODO: Separate testing for locking session to another test.
 
@@ -72,8 +84,8 @@ namespace NSonic.Tests
 
             var expected = "THIS IS A TEST";
 
-            this.writer.WriteLine(expected);
-            this.writer.Flush();
+            this.serverWriter.WriteLine(expected);
+            this.serverWriter.Flush();
 
             this.stream.Seek(0, SeekOrigin.Begin);
 
@@ -110,7 +122,7 @@ namespace NSonic.Tests
             // Assert
 
             this.stream.Seek(0, SeekOrigin.Begin);
-            var result = this.reader.ReadLine();
+            var result = this.serverReader.ReadLine();
 
             Assert.AreEqual(expected, result);
         }

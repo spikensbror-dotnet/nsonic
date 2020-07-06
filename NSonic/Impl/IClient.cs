@@ -12,7 +12,9 @@ namespace NSonic.Impl
         void Configure(Configuration configuration);
         void Connect();
         Task ConnectAsync();
-        Stream GetStream();
-        Task<Stream> GetStreamAsync();
+        StreamReader GetStreamReader();
+        Task<StreamReader> GetStreamReaderAsync();
+        StreamWriter GetStreamWriter();
+        Task<StreamWriter> GetStreamWriterAsync();
     }
 }

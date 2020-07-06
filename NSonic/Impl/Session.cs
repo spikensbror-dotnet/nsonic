@@ -1,6 +1,8 @@
 ﻿using NSonic.Utils;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace NSonic.Impl
@@ -21,24 +23,24 @@ namespace NSonic.Impl
 
         public string Read()
         {
-            return new StreamReader(this.Client.GetStream()).ReadLine();
+            return this.Client.GetStreamReader().ReadLine();
         }
 
         public async Task<string> ReadAsync()
         {
-            return await new StreamReader(await this.Client.GetStreamAsync()).ReadLineAsync();
+            return await (await this.Client.GetStreamReaderAsync()).ReadLineAsync();
         }
 
         public void Write(params string[] args)
         {
-            var writer = new StreamWriter(this.Client.GetStream());
+            var writer = this.Client.GetStreamWriter();
             writer.WriteLine(this.CreateMessage(args));
             writer.Flush();
         }
 
         public async Task WriteAsync(params string[] args)
         {
-            var writer = new StreamWriter(await this.Client.GetStreamAsync());
+            var writer = await this.Client.GetStreamWriterAsync();
             await writer.WriteLineAsync(this.CreateMessage(args));
             await writer.FlushAsync();
         }

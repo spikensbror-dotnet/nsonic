@@ -1,4 +1,5 @@
 ﻿using NSonic.Impl.Net;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,18 +55,32 @@ namespace NSonic.Impl
             this.tcpClient.Dispose();
         }
 
-        public Stream GetStream()
+        public StreamReader GetStreamReader()
         {
             this.Connect();
 
-            return this.tcpClient.GetStream();
+            return this.tcpClient.StreamReader;
         }
 
-        public async Task<Stream> GetStreamAsync()
+        public async Task<StreamReader> GetStreamReaderAsync()
         {
             await this.ConnectAsync();
 
-            return this.tcpClient.GetStream();
+            return this.tcpClient.StreamReader;
+        }
+
+        public StreamWriter GetStreamWriter()
+        {
+            this.Connect();
+
+            return this.tcpClient.StreamWriter;
+        }
+
+        public async Task<StreamWriter> GetStreamWriterAsync()
+        {
+            await this.ConnectAsync();
+
+            return this.tcpClient.StreamWriter;
         }
     }
 }

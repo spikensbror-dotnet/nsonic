@@ -6,7 +6,7 @@ namespace NSonic.ExampleConsoleApp
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             var hostname = "localhost";
             var port = 1491;
