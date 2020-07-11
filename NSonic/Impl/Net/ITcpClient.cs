@@ -9,9 +9,10 @@ namespace NSonic.Impl.Net
     {
         bool Connected { get; }
         SemaphoreSlim Semaphore { get; }
+        StreamReader StreamReader { get; }
+        StreamWriter StreamWriter { get; }
 
         void Connect(string hostname, int port);
         Task ConnectAsync(string hostname, int port);
-        Stream GetStream();
     }
 }

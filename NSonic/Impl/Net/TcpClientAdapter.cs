@@ -12,10 +12,15 @@ namespace NSonic.Impl.Net
         public bool Connected => this.client?.Connected ?? false;
 
         public SemaphoreSlim Semaphore { get; } = new SemaphoreSlim(1, 1);
+        public StreamReader StreamReader { get; private set; }
+        public StreamWriter StreamWriter { get; private set; }
 
         public virtual void Connect(string hostname, int port)
         {
+            // Underlying stream will be disposed here which means we do not have to
+            // dispose the reader/writer.
             this.client?.Dispose();
+
             this.client = new TcpClient
             {
                 ReceiveTimeout = 5000,
@@ -23,6 +28,9 @@ namespace NSonic.Impl.Net
             };
 
             this.client.Connect(hostname, port);
+
+            this.StreamWriter = new StreamWriter(this.client.GetStream());
+            this.StreamReader = new StreamReader(this.client.GetStream());
         }
 
         public virtual async Task ConnectAsync(string hostname, int port)
@@ -35,16 +43,14 @@ namespace NSonic.Impl.Net
             };
 
             await this.client.ConnectAsync(hostname, port);
+            
+            this.StreamWriter = new StreamWriter(this.client.GetStream());
+            this.StreamReader = new StreamReader(this.client.GetStream());
         }
 
         public void Dispose()
         {
             this.client?.Dispose();
-        }
-
-        public virtual Stream GetStream()
-        {
-            return this.client.GetStream();
         }
     }
 }

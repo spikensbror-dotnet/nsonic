@@ -52,13 +52,13 @@ namespace NSonic.Tests
         }
 
         [TestMethod]
-        public void GetStream_ShouldConnectIfNotConnected()
+        public void GetStreamReader_ShouldConnectIfNotConnected()
         {
             // Arrange
 
             var sequence = new MockSequence();
             var expectedEnvironment = new EnvironmentResponse(42, 32);
-            using var expectedStream = new MemoryStream();
+            using var expected = new StreamReader(new MemoryStream());
 
             this.tcpClient
                 .InSequence(sequence)
@@ -72,27 +72,27 @@ namespace NSonic.Tests
 
             this.tcpClient
                 .InSequence(sequence)
-                .Setup(tc => tc.GetStream())
-                .Returns(expectedStream);
+                .Setup(tc => tc.StreamReader)
+                .Returns(expected);
 
             // Act
 
-            var result = this.client.GetStream();
+            var result = this.client.GetStreamReader();
 
             // Assert
 
-            Assert.AreSame(expectedStream, result);
+            Assert.AreSame(expected, result);
             Assert.AreEqual(expectedEnvironment, this.client.Environment);
         }
 
         [TestMethod]
-        public async Task GetStreamAsync_ShouldConnectIfNotConnected()
+        public async Task GetStreamReaderAsync_ShouldConnectIfNotConnected()
         {
             // Arrange
 
             var sequence = new MockSequence();
             var expectedEnvironment = new EnvironmentResponse(42, 32);
-            using var expectedStream = new MemoryStream();
+            using var expected = new StreamReader(new MemoryStream());
 
             this.tcpClient
                 .InSequence(sequence)
@@ -106,16 +106,84 @@ namespace NSonic.Tests
 
             this.tcpClient
                 .InSequence(sequence)
-                .Setup(tc => tc.GetStream())
-                .Returns(expectedStream);
+                .Setup(tc => tc.StreamReader)
+                .Returns(expected);
 
             // Act
 
-            var result = await this.client.GetStreamAsync();
+            var result = await this.client.GetStreamReaderAsync();
 
             // Assert
 
-            Assert.AreSame(expectedStream, result);
+            Assert.AreSame(expected, result);
+            Assert.AreEqual(expectedEnvironment, this.client.Environment);
+        }
+
+        [TestMethod]
+        public void GetStreamWriter_ShouldConnectIfNotConnected()
+        {
+            // Arrange
+
+            var sequence = new MockSequence();
+            var expectedEnvironment = new EnvironmentResponse(42, 32);
+            using var expected = new StreamWriter(new MemoryStream());
+
+            this.tcpClient
+                .InSequence(sequence)
+                .Setup(tc => tc.Connected)
+                .Returns(false);
+
+            this.connector
+                .InSequence(sequence)
+                .Setup(c => c.Connect(this.client, this.tcpClient.Object, this.configuration))
+                .Returns(expectedEnvironment);
+
+            this.tcpClient
+                .InSequence(sequence)
+                .Setup(tc => tc.StreamWriter)
+                .Returns(expected);
+
+            // Act
+
+            var result = this.client.GetStreamWriter();
+
+            // Assert
+
+            Assert.AreSame(expected, result);
+            Assert.AreEqual(expectedEnvironment, this.client.Environment);
+        }
+
+        [TestMethod]
+        public async Task GetStreamWriterAsync_ShouldConnectIfNotConnected()
+        {
+            // Arrange
+
+            var sequence = new MockSequence();
+            var expectedEnvironment = new EnvironmentResponse(42, 32);
+            using var expected = new StreamWriter(new MemoryStream());
+
+            this.tcpClient
+                .InSequence(sequence)
+                .Setup(tc => tc.Connected)
+                .Returns(false);
+
+            this.connector
+                .InSequence(sequence)
+                .Setup(c => c.ConnectAsync(this.client, this.tcpClient.Object, this.configuration))
+                .Returns(Task.FromResult(expectedEnvironment));
+
+            this.tcpClient
+                .InSequence(sequence)
+                .Setup(tc => tc.StreamWriter)
+                .Returns(expected);
+
+            // Act
+
+            var result = await this.client.GetStreamWriterAsync();
+
+            // Assert
+
+            Assert.AreSame(expected, result);
             Assert.AreEqual(expectedEnvironment, this.client.Environment);
         }
     }

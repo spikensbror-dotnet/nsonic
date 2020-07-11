@@ -13,6 +13,10 @@ Go and read the [documentation](https://dev.azure.com/cyaspik/DotNet/_wiki/wikis
 
 ## Changelog
 
+### v1.3.3
+
+* Fixed issue with only partial responses being returned.
+
 ### v1.3.2
 
 * NSonic connections no longer have to be explicitly connected.

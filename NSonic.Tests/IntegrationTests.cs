@@ -24,74 +24,62 @@ namespace NSonic.Tests
         [TestMethod]
         public async Task VerifyFunctionalityAsync()
         {
-            using (var control = NSonicFactory.Control(Hostname, Port, Secret))
-            {
-                await control.ConnectAsync();
-                await control.InfoAsync();
-                await control.TriggerAsync("consolidate");
-            }
+            using var control = NSonicFactory.Control(Hostname, Port, Secret);
+            await control.ConnectAsync();
+            await control.InfoAsync();
+            await control.TriggerAsync("consolidate");
 
-            using (var search = NSonicFactory.Search(Hostname, Port, Secret))
-            {
-                await search.ConnectAsync();
-                await search.QueryAsync("messages", "user:1", "s");
-                await search.SuggestAsync("messages", "user:1", "s");
+            using var search = NSonicFactory.Search(Hostname, Port, Secret);
+            await search.ConnectAsync();
+            await search.QueryAsync("messages", "user:1", "s");
+            await search.SuggestAsync("messages", "user:1", "s");
 
-                await search.QueryAsync("ContentIndex", "default", "example");
-                await search.SuggestAsync("ContentIndex", "default", "example");
-                await search.QueryAsync("ContentIndex", "default", "example");
-                await search.QueryAsync("ContentIndex", "default", "example");
-                await search.QueryAsync("ContentIndex", "default", "example");
-                await search.SuggestAsync("ContentIndex", "default", "example");
-                await search.SuggestAsync("ContentIndex", "default", "example");
-                await search.SuggestAsync("ContentIndex", "default", "example");
-            }
+            await search.QueryAsync("ContentIndex", "default", "example");
+            await search.SuggestAsync("ContentIndex", "default", "example");
+            await search.QueryAsync("ContentIndex", "default", "example");
+            await search.QueryAsync("ContentIndex", "default", "example");
+            await search.QueryAsync("ContentIndex", "default", "example");
+            await search.SuggestAsync("ContentIndex", "default", "example");
+            await search.SuggestAsync("ContentIndex", "default", "example");
+            await search.SuggestAsync("ContentIndex", "default", "example");
 
-            using (var ingest = NSonicFactory.Ingest(Hostname, Port, Secret))
-            {
-                await ingest.ConnectAsync();
-                await ingest.PushAsync("messages", "user:1", "conversation:1", "This is an example push.", locale: "SWE");
-                await ingest.PopAsync("messages", "user:1", "conversation:1", "This is an example push.");
-                await ingest.CountAsync("messages", "user:1");
-                await ingest.FlushCollectionAsync("messages");
-                await ingest.FlushBucketAsync("messages", "user:1");
-                await ingest.FlushObjectAsync("messages", "user:1", "conversation:1");
-            }
+            using var ingest = NSonicFactory.Ingest(Hostname, Port, Secret);
+            await ingest.ConnectAsync();
+            await ingest.PushAsync("messages", "user:1", "conversation:1", "This is an example push.", locale: "SWE");
+            await ingest.PopAsync("messages", "user:1", "conversation:1", "This is an example push.");
+            await ingest.CountAsync("messages", "user:1");
+            await ingest.FlushCollectionAsync("messages");
+            await ingest.FlushBucketAsync("messages", "user:1");
+            await ingest.FlushObjectAsync("messages", "user:1", "conversation:1");
         }
 
         [TestMethod]
         public void VerifyFunctionality()
         {
-            using (var control = NSonicFactory.Control(Hostname, Port, Secret))
-            {
-                control.Connect();
-                control.Info();
-                control.Trigger("consolidate");
-            }
+            using var control = NSonicFactory.Control(Hostname, Port, Secret);
+            control.Connect();
+            control.Info();
+            control.Trigger("consolidate");
 
-            using (var search = NSonicFactory.Search(Hostname, Port, Secret))
-            {
-                search.Connect();
-                search.Query("ContentIndex", "default", "example");
-                search.Suggest("ContentIndex", "default", "example");
-                search.Query("ContentIndex", "default", "example");
-                search.Query("ContentIndex", "default", "example");
-                search.Query("ContentIndex", "default", "example");
-                search.Suggest("ContentIndex", "default", "example");
-                search.Suggest("ContentIndex", "default", "example");
-                search.Suggest("ContentIndex", "default", "example");
-            }
+            using var search = NSonicFactory.Search(Hostname, Port, Secret);
+            search.Connect();
+            search.Query("ContentIndex", "default", "example");
+            search.Suggest("ContentIndex", "default", "example");
+            search.Query("ContentIndex", "default", "example");
+            search.Query("ContentIndex", "default", "example");
+            search.Query("ContentIndex", "default", "example");
+            search.Suggest("ContentIndex", "default", "example");
+            search.Suggest("ContentIndex", "default", "example");
+            search.Suggest("ContentIndex", "default", "example");
 
-            using (var ingest = NSonicFactory.Ingest(Hostname, Port, Secret))
-            {
-                ingest.Connect();
-                ingest.Push("messages", "user:1", "conversation:1", "This is an example push.", locale: "SWE");
-                ingest.Pop("messages", "user:1", "conversation:1", "This is an example push.");
-                ingest.Count("messages", "user:1");
-                ingest.FlushCollection("messages");
-                ingest.FlushBucket("messages", "user:1");
-                ingest.FlushObject("messages", "user:1", "conversation:1");
-            }
+            using var ingest = NSonicFactory.Ingest(Hostname, Port, Secret);
+            ingest.Connect();
+            ingest.Push("messages", "user:1", "conversation:1", "This is an example push.", locale: "SWE");
+            ingest.Pop("messages", "user:1", "conversation:1", "This is an example push.");
+            ingest.Count("messages", "user:1");
+            ingest.FlushCollection("messages");
+            ingest.FlushBucket("messages", "user:1");
+            ingest.FlushObject("messages", "user:1", "conversation:1");
         }
     }
 }
