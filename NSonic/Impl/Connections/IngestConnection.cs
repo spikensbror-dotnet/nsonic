@@ -163,7 +163,7 @@ namespace NSonic.Impl.Connections
                 this.locale = locale;
             }
 
-            public string Text => $"\"{this.text}\"";
+            public string Text => $"\"{this.text.Replace("\n", " ").Replace("\"", "\\\"")}\"";
             public string Locale => !string.IsNullOrEmpty(this.locale) ? $"LANG({this.locale})" : "";
         }
     }
