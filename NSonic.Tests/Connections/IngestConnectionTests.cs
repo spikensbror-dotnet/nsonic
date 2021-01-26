@@ -194,5 +194,97 @@ namespace NSonic.Tests.Connections
 
             this.VerifyAll();
         }
+
+        [TestMethod]
+        public async Task Push_ShouldBeAbleToPreventInjectionAttacksWithLocale_1() {
+            // Arrange
+
+            this.SetupWriteWithOk("PUSH", "collection_name", "bucket_name", "obj_id", "\"term\\\"\"", "LANG(test)");
+
+            // Act
+
+            if (this.Async) {
+                await this.connection.ConnectAsync();
+
+                await this.connection.PushAsync("collection_name", "bucket_name", "obj_id", "term\"", "test");
+            } else {
+                this.connection.Connect();
+
+                this.connection.Push("collection_name", "bucket_name", "obj_id", "term\"", "test");
+            }
+
+            // Assert
+
+            this.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task Push_ShouldBeAbleToPreventInjectionAttacksWithLocale_2() {
+            // Arrange
+
+            this.SetupWriteWithOk("PUSH", "collection_name", "bucket_name", "obj_id", "\"term\\n\"", "LANG(test)");
+
+            // Act
+
+            if (this.Async) {
+                await this.connection.ConnectAsync();
+
+                await this.connection.PushAsync("collection_name", "bucket_name", "obj_id", "term\n", "test");
+            } else {
+                this.connection.Connect();
+
+                this.connection.Push("collection_name", "bucket_name", "obj_id", "term\n", "test");
+            }
+
+            // Assert
+
+            this.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task Push_ShouldBeAbleToPreventInjectionAttacksWithoutLocale_1() {
+            // Arrange
+
+            this.SetupWriteWithOk("PUSH", "collection_name", "bucket_name", "obj_id", "\"term\\\"\"", "");
+
+            // Act
+
+            if (this.Async) {
+                await this.connection.ConnectAsync();
+
+                await this.connection.PushAsync("collection_name", "bucket_name", "obj_id", "term\"");
+            } else {
+                this.connection.Connect();
+
+                this.connection.Push("collection_name", "bucket_name", "obj_id", "term\"");
+            }
+
+            // Assert
+
+            this.VerifyAll();
+        }
+
+        [TestMethod]
+        public async Task Push_ShouldBeAbleToPreventInjectionAttacksWithoutLocale_2() {
+            // Arrange
+
+            this.SetupWriteWithOk("PUSH", "collection_name", "bucket_name", "obj_id", "\"term\\n\"", "");
+
+            // Act
+
+            if (this.Async) {
+                await this.connection.ConnectAsync();
+
+                await this.connection.PushAsync("collection_name", "bucket_name", "obj_id", "term\n");
+            } else {
+                this.connection.Connect();
+
+                this.connection.Push("collection_name", "bucket_name", "obj_id", "term\n");
+            }
+
+            // Assert
+
+            this.VerifyAll();
+        }
     }
 }
