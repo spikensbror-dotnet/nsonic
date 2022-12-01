@@ -39,7 +39,7 @@
         /// Flushes search data from a collection.
         /// </summary>
         /// <param name="collection">The collection to flush.</param>
-        /// <returns>The amount of search data that was flushed.</returns>
+        /// <returns>The amount of collection that was flushed.</returns>
         int FlushCollection(string collection);
 
         /// <summary>
@@ -47,7 +47,7 @@
         /// </summary>
         /// <param name="collection">The collection of the bucket.</param>
         /// <param name="bucket">The bucket to flush.</param>
-        /// <returns>The amount of search data that was flushed.</returns>
+        /// <returns>The amount of bucket that was flushed.</returns>
         int FlushBucket(string collection, string bucket);
 
         /// <summary>
@@ -56,7 +56,7 @@
         /// <param name="collection">The collection of the object.</param>
         /// <param name="bucket">The bucket of the object.</param>
         /// <param name="object">The object to flush.</param>
-        /// <returns>The amount of search data that was flushed.</returns>
+        /// <returns>The amount of object that was flushed.</returns>
         int FlushObject(string collection, string bucket, string @object);
     }
 }
